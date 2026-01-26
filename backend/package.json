@@ -22,6 +22,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prisma:seed": "ts-node prisma/seed.ts",
+    "migrate:deploy": "prisma migrate deploy",
+    "postinstall": "prisma generate",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down"
   },

@@ -1,67 +1,108 @@
-# 🐝 POSBuzz - Point of Sale System
+# 🐝 POSBuzz - Comprehensive POS & Inventory Management System
 
-POSBuzz is a modern, comprehensive Point of Sale (POS) system designed for maximum efficiency, scalability, and ease of use. It leverages a monorepo architecture to streamline development across both the frontend and backend services.
+POSBuzz is a professional, full-stack Point of Sale (POS) system designed for small to medium enterprises. It allows businesses to manage products, track inventory in real-time, and process sales with high data integrity.
 
-## 🚀 Project Overview
+## 🚀 Live Demo
+- **Frontend**: [posbuzz-ui.vercel.app](https://posbuzz-ui.vercel.app)
+- **Backend API**: [posbuzz-api.railway.app](https://posbuzz-api.railway.app/api/v1)
 
-- **Frontend**: A high-performance user interface built with modern web technologies.
-- **Backend**: A robust API service handling business logic, inventory, and sales transactions.
+---
 
-## 📁 Monorepo Structure
+## 🛠 Tech Stack
 
+### Backend
+- **Framework**: NestJS (Node.js)
+- **Database**: PostgreSQL with Prisma ORM
+- **Cache**: Redis for high-performance reading
+- **Security**: JWT Authentication + Bcrypt hashing
+- **Testing**: Jest
+
+### Frontend
+- **Library**: React 18 + TypeScript
+- **Tooling**: Vite
+- **UI Framework**: Ant Design (Premium Design System)
+- **State Management**: TanStack Query (React Query)
+- **API Client**: Axios with interceptors
+
+---
+
+## ✨ Key Features
+- **Authentication**: Secure JWT-based registration and login system with persistent sessions.
+- **Product Management**: Complete CRUD with SKU tracking and real-time stock alerts.
+- **POS Terminal**: Dynamic sales interface with cart management and automated stock validation.
+- **Interactive Dashboard**: Real-time business metrics, low stock warnings, and transaction history.
+- **Transaction Safety**: Atomic database transactions ensure inventory accuracy during sales.
+- **Caching**: Integrated Redis caching for lightning-fast product listings.
+
+---
+
+## 📂 Project Structure
 ```text
 posbuzz/
-├── frontend/         # React-based customer/admin interface
-├── backend/          # Node.js/Express API service
-├── package.json      # Root configuration & workspace scripts
-└── .gitignore        # Global exclusion rules
+├── backend/            # NestJS API, Prisma Schema, Core Logic
+├── frontend/           # React + Vite application, Ant Design UI
+├── .agent/             # Agent configuration and workflows
+├── DEPLOYMENT.md       # Step-by-step production guide
+└── POSBuzz.postman_collection.json  # Pre-configured API tests
 ```
 
-## 🛠️ Getting Started
+---
+
+## 💻 Local Development Setup
 
 ### Prerequisites
+- Node.js (v18+)
+- PostgreSQL
+- Redis
 
-- **Node.js**: v18.x or higher
-- **npm**: v9.x or higher
+### 1. Installation
+```powershell
+# Clone the repository
+git clone https://github.com/nokib-web/PosBuzz.git
+cd posbuzz
 
-### Installation
-
-Clone the repository and install all dependencies for the entire workspace:
-
-```bash
-npm run install:all
+# Install all dependencies (Monorepo root)
+npm install
 ```
 
-### Development
+### 2. Environment Configuration
+Create a `.env` file in both `backend/` and `frontend/` folders.
 
-To run both services in parallel during development:
+**Backend (.env):**
+```text
+DATABASE_URL="postgresql://user:pass@localhost:5432/posbuzz"
+REDIS_URL="redis://localhost:6379"
+JWT_SECRET="your-super-secret"
+PORT=3000
+```
 
-```bash
+**Frontend (.env):**
+```text
+VITE_API_URL=http://localhost:3000/api/v1
+```
+
+### 3. Database Sync
+```powershell
+cd backend
+npx prisma db push
+```
+
+### 4. Run the Apps
+```powershell
+# From root
 npm run dev
 ```
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:3000/api/v1`
+- Swagger Docs: `http://localhost:3000/api-docs`
 
-Or run them individually:
+---
 
-```bash
-# Start frontend only
-npm run frontend
+## 🧪 Testing & Documentation
+- **API Tests**: Import `POSBuzz.postman_collection.json` into Postman.
+- **Manual**: Use the Swagger documentation at `/api-docs` for interactive API testing.
 
-# Start backend only
-npm run backend
-```
+---
 
-### Production
-
-To prepare the system for production:
-
-```bash
-# Build all workspaces
-npm run build
-
-# Start the production services
-npm start
-```
-
-## 📜 License
-
-This project is licensed under the ISC License.
+## 📄 License
+MIT License - Copyright (c) 2026 POSBuzz Team.
