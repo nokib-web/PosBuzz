@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
+import ProductListPage from './pages/products/ProductListPage';
 
 function App() {
     return (
@@ -35,7 +36,7 @@ function App() {
                             path="/products"
                             element={
                                 <ProtectedRoute>
-                                    <div>Products Page (Coming Soon)</div>
+                                    <ProductListPage />
                                 </ProtectedRoute>
                             }
                         />
