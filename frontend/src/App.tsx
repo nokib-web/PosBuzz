@@ -3,6 +3,9 @@ import { ConfigProvider } from 'antd';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+
 function App() {
     return (
         <ConfigProvider
@@ -16,8 +19,8 @@ function App() {
             <AuthProvider>
                 <Router>
                     <Routes>
-                        <Route path="/login" element={<div>Login Page (Coming Soon)</div>} />
-                        <Route path="/register" element={<div>Register Page (Coming Soon)</div>} />
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/register" element={<RegisterPage />} />
 
                         <Route
                             path="/"
