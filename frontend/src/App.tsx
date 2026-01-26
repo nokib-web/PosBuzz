@@ -6,6 +6,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ProductListPage from './pages/products/ProductListPage';
+import CreateSalePage from './pages/sales/CreateSalePage';
+import SaleHistoryPage from './pages/sales/SaleHistoryPage';
 
 function App() {
     return (
@@ -45,7 +47,16 @@ function App() {
                             path="/sales"
                             element={
                                 <ProtectedRoute>
-                                    <div>Sales Page (Coming Soon)</div>
+                                    <CreateSalePage />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        <Route
+                            path="/sales/history"
+                            element={
+                                <ProtectedRoute>
+                                    <SaleHistoryPage />
                                 </ProtectedRoute>
                             }
                         />
