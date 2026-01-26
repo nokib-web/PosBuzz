@@ -1,10 +1,12 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import MainLayout from './components/layout/MainLayout';
 
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
+import DashboardPage from './pages/dashboard/DashboardPage';
 import ProductListPage from './pages/products/ProductListPage';
 import CreateSalePage from './pages/sales/CreateSalePage';
 import SaleHistoryPage from './pages/sales/SaleHistoryPage';
@@ -22,44 +24,29 @@ function App() {
             <AuthProvider>
                 <Router>
                     <Routes>
+                        {/* Public Routes */}
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/register" element={<RegisterPage />} />
 
+                        {/* Protected Routes inside MainLayout */}
                         <Route
-                            path="/"
                             element={
                                 <ProtectedRoute>
-                                    <div>Dashboard (Coming Soon)</div>
+                                    <MainLayout />
                                 </ProtectedRoute>
                             }
-                        />
+                        >
+                            <Route path="/dashboard" element={<DashboardPage />} />
+                            <Route path="/products" element={<ProductListPage />} />
+                            <Route path="/sales/new" element={<CreateSalePage />} />
+                            <Route path="/sales" element={<SaleHistoryPage />} />
 
-                        <Route
-                            path="/products"
-                            element={
-                                <ProtectedRoute>
-                                    <ProductListPage />
-                                </ProtectedRoute>
-                            }
-                        />
+                            {/* Redirect root to dashboard */}
+                            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                        </Route>
 
-                        <Route
-                            path="/sales"
-                            element={
-                                <ProtectedRoute>
-                                    <CreateSalePage />
-                                </ProtectedRoute>
-                            }
-                        />
-
-                        <Route
-                            path="/sales/history"
-                            element={
-                                <ProtectedRoute>
-                                    <SaleHistoryPage />
-                                </ProtectedRoute>
-                            }
-                        />
+                        {/* Fallback */}
+                        <Route path="*" element={<Navigate to="/dashboard" replace />} />
                     </Routes>
                 </Router>
             </AuthProvider>
