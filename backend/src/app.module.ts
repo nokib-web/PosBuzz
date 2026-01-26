@@ -6,6 +6,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RedisModule } from './common/redis/redis.module';
 import { ProductModule } from './modules/product/product.module';
+import { SaleModule } from './modules/sale/sale.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -18,9 +19,9 @@ import configuration from './config/configuration';
     AuthModule,
     RedisModule,
     ProductModule,
+    SaleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule { }
-
