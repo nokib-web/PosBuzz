@@ -1,0 +1,33 @@
+{
+  "name": "posbuzz",
+  "version": "1.0.0",
+  "description": "A comprehensive monorepo for POSBuzz system",
+  "private": true,
+  "scripts": {
+    "frontend": "npm run dev --workspace=frontend",
+    "backend": "npm run dev --workspace=backend",
+    "dev": "npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "start": "npm run start --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "install:all": "npm install && npm install --workspaces",
+    "docker:up": "npm run docker:up --workspace=backend",
+    "docker:down": "npm run docker:down --workspace=backend"
+  },
+  "keywords": [
+    "pos",
+    "monorepo",
+    "inventory",
+    "sales",
+    "management"
+  ],
+  "author": "",
+  "license": "ISC",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
