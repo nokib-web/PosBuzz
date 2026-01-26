@@ -33,7 +33,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
             path: request.url,
             method: request.method,
             error: typeof message === 'string' ? message : (message as any).error || 'Error',
-            message: typeof message === 'string' ? message : (message as any).message || message,
+            message: typeof message === 'string'
+                ? message
+                : (message as any).message || (process.env.NODE_ENV === 'development' ? exception?.message : 'Internal server error'),
         };
 
         // Log the error
