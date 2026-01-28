@@ -7,7 +7,8 @@
         "dev": "vite",
         "build": "tsc && vite build",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "start": "serve -s dist -l $PORT"
     },
     "dependencies": {
         "@ant-design/icons": "^5.2.6",
@@ -18,7 +19,8 @@
         "dayjs": "^1.11.10",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "react-router-dom": "^6.22.0"
+        "react-router-dom": "^6.22.0",
+        "serve": "^14.2.5"
     },
     "devDependencies": {
         "@types/node": "^20.11.16",
