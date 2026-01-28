@@ -34,6 +34,7 @@ export class AuthService {
             data: {
                 email: dto.email,
                 password: hashedPassword,
+                role: dto.role || 'CASHIER',
             },
             select: {
                 id: true,
@@ -70,6 +71,15 @@ export class AuthService {
 
         if (!isPasswordValid) {
             throw new UnauthorizedException('Invalid credentials');
+        }
+
+        // Temporary: Auto-upgrade admin@gmail.com to ADMIN role for development/testing convenience
+        if (user.email === 'admin@gmail.com' && user.role !== 'ADMIN') {
+            await this.prisma.user.update({
+                where: { id: user.id },
+                data: { role: 'ADMIN' }
+            });
+            user.role = 'ADMIN' as any;
         }
 
         // Generate token
