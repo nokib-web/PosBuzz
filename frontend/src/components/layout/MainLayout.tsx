@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Layout, Menu, Button, Typography, Space, theme } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Layout, Menu, Button, Typography, Space, theme, Drawer } from 'antd';
 import {
     DashboardOutlined,
     ShoppingOutlined,
@@ -20,12 +20,26 @@ const { Text } = Typography;
 
 const MainLayout: React.FC = () => {
     const [collapsed, setCollapsed] = useState(false);
+    const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
+
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+            if (window.innerWidth >= 768) {
+                setMobileDrawerOpen(false);
+            }
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const handleLogout = () => {
         logout();
@@ -36,85 +50,114 @@ const MainLayout: React.FC = () => {
         {
             key: '/dashboard',
             icon: <DashboardOutlined />,
-            label: <Link to="/dashboard">Dashboard</Link>,
+            label: <Link to="/dashboard" onClick={() => setMobileDrawerOpen(false)}>Dashboard</Link>,
         },
         {
             key: '/products',
             icon: <ShoppingOutlined />,
-            label: <Link to="/products">Products</Link>,
+            label: <Link to="/products" onClick={() => setMobileDrawerOpen(false)}>Products</Link>,
         },
         {
             key: '/sales/new',
             icon: <PlusCircleOutlined />,
-            label: <Link to="/sales/new">Create Sale</Link>,
+            label: <Link to="/sales/new" onClick={() => setMobileDrawerOpen(false)}>Create Sale</Link>,
         },
         {
             key: '/sales',
             icon: <HistoryOutlined />,
-            label: <Link to="/sales">Sales History</Link>,
+            label: <Link to="/sales" onClick={() => setMobileDrawerOpen(false)}>Sales History</Link>,
         },
         {
             key: '/customers',
             icon: <UserOutlined />,
-            label: <Link to="/customers">Customers</Link>,
+            label: <Link to="/customers" onClick={() => setMobileDrawerOpen(false)}>Customers</Link>,
         },
         {
             key: '/suppliers',
             icon: <ShopOutlined />,
-            label: <Link to="/suppliers">Suppliers</Link>,
+            label: <Link to="/suppliers" onClick={() => setMobileDrawerOpen(false)}>Suppliers</Link>,
         },
         {
             key: '/promotions',
             icon: <GiftOutlined />,
-            label: <Link to="/promotions">Promotions</Link>,
+            label: <Link to="/promotions" onClick={() => setMobileDrawerOpen(false)}>Promotions</Link>,
         },
     ];
 
+    const SidebarContent = (
+        <>
+            <div style={{
+                height: 64,
+                margin: 16,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: 8,
+                overflow: 'hidden'
+            }}>
+                {collapsed && !isMobile ? (
+                    <img src="/favicon.png" alt="Logo" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+                ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <img src="/favicon.png" alt="Logo" style={{ width: 40, height: 40, objectFit: 'contain' }} />
+                        <h2 style={{ color: isMobile ? '#000' : 'white', margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>POSBuzz</h2>
+                    </div>
+                )}
+            </div>
+            <Menu
+                theme={isMobile ? "light" : "dark"}
+                mode="inline"
+                selectedKeys={[location.pathname]}
+                items={menuItems}
+                style={{ borderRight: 0 }}
+            />
+            <div style={{ position: 'absolute', bottom: 16, width: '100%', padding: '0 16px' }}>
+                <Button
+                    type="text"
+                    icon={<LogoutOutlined />}
+                    onClick={handleLogout}
+                    style={{
+                        color: isMobile ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.65)',
+                        width: '100%',
+                        textAlign: 'left',
+                        padding: '4px 15px'
+                    }}
+                >
+                    {(isMobile || !collapsed) && 'Logout'}
+                </Button>
+            </div>
+        </>
+    );
+
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            <Sider trigger={null} collapsible collapsed={collapsed} breakpoint="lg">
-                <div style={{
-                    height: 64,
-                    margin: 16,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    borderRadius: 8,
-                    overflow: 'hidden'
-                }}>
-                    {collapsed ? (
-                        <img src="/favicon.png" alt="Logo" style={{ width: 32, height: 32, objectFit: 'contain' }} />
-                    ) : (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <img src="/favicon.png" alt="Logo" style={{ width: 40, height: 40, objectFit: 'contain' }} />
-                            <h2 style={{ color: 'white', margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>POSBuzz</h2>
-                        </div>
-                    )}
-                </div>
-                <Menu
-                    theme="dark"
-                    mode="inline"
-                    selectedKeys={[location.pathname]}
-                    items={menuItems}
-                />
-                <div style={{ position: 'absolute', bottom: 16, width: '100%', padding: '0 16px' }}>
-                    <Button
-                        type="text"
-                        icon={<LogoutOutlined />}
-                        onClick={handleLogout}
-                        style={{ color: 'rgba(255,255,255,0.65)', width: '100%', textAlign: 'left', padding: 0 }}
-                    >
-                        {!collapsed && 'Logout'}
-                    </Button>
-                </div>
-            </Sider>
+            {!isMobile && (
+                <Sider trigger={null} collapsible collapsed={collapsed} breakpoint="lg" collapsedWidth={80}>
+                    {SidebarContent}
+                </Sider>
+            )}
+
+            {/* Mobile Drawer Sidebar */}
+            {isMobile && (
+                <Drawer
+                    placement="left"
+                    onClose={() => setMobileDrawerOpen(false)}
+                    open={mobileDrawerOpen}
+                    width={250}
+                    styles={{ body: { padding: 0 }, header: { display: 'none' } }}
+                    closable={false}
+                >
+                    {SidebarContent}
+                </Drawer>
+            )}
+
             <Layout>
                 <Header style={{ padding: 0, background: colorBgContainer, display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingRight: 24 }}>
                     <Button
                         type="text"
-                        icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                        onClick={() => setCollapsed(!collapsed)}
+                        icon={isMobile ? <MenuUnfoldOutlined /> : (collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />)}
+                        onClick={() => isMobile ? setMobileDrawerOpen(true) : setCollapsed(!collapsed)}
                         style={{
                             fontSize: '16px',
                             width: 64,
@@ -133,7 +176,7 @@ const MainLayout: React.FC = () => {
                         minHeight: 280,
                         background: colorBgContainer,
                         borderRadius: borderRadiusLG,
-                        overflow: 'initial'
+                        overflowX: 'hidden'
                     }}
                 >
                     <Outlet />

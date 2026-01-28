@@ -36,8 +36,8 @@ const LoginPage: React.FC = () => {
     };
 
     return (
-        <div style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
-            <Row style={{ height: '100%' }}>
+        <div style={{ minHeight: '100vh', width: '100%', overflowX: 'hidden' }}>
+            <Row style={{ minHeight: '100vh' }}>
                 {/* Left Side - Hero Section */}
                 <Col
                     xs={0}
