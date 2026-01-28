@@ -1,18 +1,19 @@
 import React from 'react';
-import { Form, Input, Button, Card, Typography, Checkbox, Alert, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Typography, Checkbox, Alert, message, Row, Col, theme } from 'antd';
+import { UserOutlined, LockOutlined, ThunderboltFilled } from '@ant-design/icons';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '../../hooks/useAuth';
 import { LoginDto } from '../../types/auth.types';
 
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
 const LoginPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { login } = useAuth();
     const [form] = Form.useForm();
+    const { token } = theme.useToken();
 
     const from = location.state?.from?.pathname || '/';
 
@@ -21,7 +22,7 @@ const LoginPage: React.FC = () => {
             await login(values);
         },
         onSuccess: () => {
-            message.success('Login successful!');
+            message.success('Welcome back!');
             navigate(from, { replace: true });
         },
         onError: (error: any) => {
@@ -35,111 +36,195 @@ const LoginPage: React.FC = () => {
     };
 
     return (
-        <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '100vh',
-            backgroundColor: '#f0f2f5'
-        }}>
-            <Card style={{ width: 400, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', borderRadius: 12 }}>
-                <div style={{ textAlign: 'center', marginBottom: 24 }}>
-                    <img src="/favicon.png" alt="POSBuzz Logo" style={{ width: 80, marginBottom: 16 }} />
-                    <Title level={2} style={{ margin: 0 }}>POSBuzz</Title>
-                    <Text type="secondary">Sign in to your account</Text>
-                </div>
-
-                {loginMutation.isError && (
-                    <Alert
-                        message="Login Failed"
-                        description={(loginMutation.error as any)?.response?.data?.message || 'Internal server error'}
-                        type="error"
-                        showIcon
-                        style={{ marginBottom: 24 }}
-                    />
-                )}
-
-                <Form
-                    form={form}
-                    name="login_form"
-                    initialValues={{ remember: true }}
-                    onFinish={onFinish}
-                    layout="vertical"
-                    size="large"
+        <div style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
+            <Row style={{ height: '100%' }}>
+                {/* Left Side - Hero Section */}
+                <Col
+                    xs={0}
+                    md={12}
+                    lg={14}
+                    style={{
+                        backgroundImage: 'url("/login-bg.png")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        position: 'relative',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '40px',
+                    }}
                 >
-                    <Form.Item
-                        name="email"
-                        rules={[
-                            { required: true, message: 'Please input your email!' },
-                            { type: 'email', message: 'Please enter a valid email!' }
-                        ]}
-                    >
-                        <Input prefix={<UserOutlined />} placeholder="Email" />
-                    </Form.Item>
+                    <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(0, 21, 41, 0.7)', // Deep blue overlay matching branding
+                        backdropFilter: 'blur(4px)',
+                    }}></div>
 
-                    <Form.Item
-                        name="password"
-                        rules={[{ required: true, message: 'Please input your password!' }]}
-                    >
-                        <Input.Password prefix={<LockOutlined />} placeholder="Password" />
-                    </Form.Item>
-
-                    <Form.Item>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Form.Item name="remember" valuePropName="checked" noStyle>
-                                <Checkbox>Remember me</Checkbox>
-                            </Form.Item>
-                            <Link to="/forgot-password" style={{ color: '#1677ff' }}>Forgot password?</Link>
+                    <div style={{ position: 'relative', zIndex: 1, maxWidth: '600px', textAlign: 'center' }}>
+                        <div style={{
+                            marginBottom: '24px',
+                            display: 'inline-flex',
+                            padding: '20px',
+                            background: 'rgba(255,255,255,0.1)',
+                            borderRadius: '50%',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255,255,255,0.2)'
+                        }}>
+                            <ThunderboltFilled style={{ fontSize: '64px', color: '#fff' }} />
                         </div>
-                    </Form.Item>
+                        <Title level={1} style={{ color: '#fff', fontSize: '48px', marginBottom: '16px', fontWeight: 700 }}>
+                            POSBuzz
+                        </Title>
+                        <Paragraph style={{ color: 'rgba(255,255,255,0.85)', fontSize: '18px', lineHeight: '1.6' }}>
+                            The next-generation Point of Sale system designed to streamline your business operations and boost productivity.
+                        </Paragraph>
+                    </div>
+                </Col>
 
-                    <Form.Item>
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            style={{ width: '100%' }}
-                            loading={loginMutation.isPending}
+                {/* Right Side - Login Form */}
+                <Col
+                    xs={24}
+                    md={12}
+                    lg={10}
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: '#fff',
+                        padding: '40px',
+                    }}
+                >
+                    <div style={{ width: '100%', maxWidth: '420px' }}>
+                        <div style={{ marginBottom: '40px' }}>
+                            <Title level={2} style={{ marginBottom: '8px' }}>Welcome Back</Title>
+                            <Text type="secondary" style={{ fontSize: '16px' }}>Please enter your details to sign in.</Text>
+                        </div>
+
+                        {loginMutation.isError && (
+                            <Alert
+                                message="Authentication Failed"
+                                description={(loginMutation.error as any)?.response?.data?.message || 'Internal server error'}
+                                type="error"
+                                showIcon
+                                style={{ marginBottom: 24, borderRadius: '8px' }}
+                            />
+                        )}
+
+                        <Form
+                            form={form}
+                            name="login_form"
+                            initialValues={{ remember: true }}
+                            onFinish={onFinish}
+                            layout="vertical"
+                            size="large"
                         >
-                            Log in
-                        </Button>
-                    </Form.Item>
-
-                    <div style={{ textAlign: 'center' }}>
-                        <Text type="secondary">Don't have an account? </Text>
-                        <Link to="/register" style={{ color: '#1677ff' }}>Register now</Link>
-                    </div>
-
-                    <div style={{ marginTop: 24, padding: '16px', background: '#f5f5f5', borderRadius: '8px' }}>
-                        <Text type="secondary" style={{ display: 'block', marginBottom: 8, textAlign: 'center', fontSize: '12px' }}>
-                            Demo Accounts
-                        </Text>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                            <Button
-                                block
-                                onClick={() => {
-                                    form.setFieldsValue({
-                                        email: 'admin@gmail.com',
-                                        password: '!QAZ1qaz'
-                                    });
-                                }}
+                            <Form.Item
+                                name="email"
+                                rules={[
+                                    { required: true, message: 'Please input your email!' },
+                                    { type: 'email', message: 'Invalid email format' }
+                                ]}
                             >
-                                Demo Admin
-                            </Button>
-                            <Button
-                                block
-                                onClick={() => {
-                                    form.setFieldsValue({
-                                        email: 'employee@demo.com',
-                                        password: 'password123'
-                                    });
-                                }}
+                                <Input
+                                    prefix={<UserOutlined style={{ color: token.colorTextQuaternary }} />}
+                                    placeholder="Email Address"
+                                    style={{ borderRadius: '8px', padding: '10px 14px' }}
+                                />
+                            </Form.Item>
+
+                            <Form.Item
+                                name="password"
+                                rules={[{ required: true, message: 'Please input your password!' }]}
                             >
-                                Demo Employee
-                            </Button>
-                        </div>
+                                <Input.Password
+                                    prefix={<LockOutlined style={{ color: token.colorTextQuaternary }} />}
+                                    placeholder="Password"
+                                    style={{ borderRadius: '8px', padding: '10px 14px' }}
+                                />
+                            </Form.Item>
+
+                            <Form.Item>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Form.Item name="remember" valuePropName="checked" noStyle>
+                                        <Checkbox>Remember me</Checkbox>
+                                    </Form.Item>
+                                    <Link to="/forgot-password" style={{ color: token.colorPrimary, fontWeight: 500 }}>
+                                        Forgot password?
+                                    </Link>
+                                </div>
+                            </Form.Item>
+
+                            <Form.Item>
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                    block
+                                    loading={loginMutation.isPending}
+                                    style={{
+                                        height: '48px',
+                                        fontSize: '16px',
+                                        borderRadius: '8px',
+                                        fontWeight: 600,
+                                        boxShadow: '0 4px 14px 0 rgba(22, 119, 255, 0.3)'
+                                    }}
+                                >
+                                    Sign In
+                                </Button>
+                            </Form.Item>
+
+                            <div style={{ marginTop: '32px' }}>
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    marginBottom: '24px',
+                                    color: token.colorTextQuaternary
+                                }}>
+                                    <span style={{ borderBottom: '1px solid #f0f0f0', flex: 1, marginRight: '12px' }}></span>
+                                    TEST ACCOUNTS
+                                    <span style={{ borderBottom: '1px solid #f0f0f0', flex: 1, marginLeft: '12px' }}></span>
+                                </div>
+
+                                <Row gutter={16}>
+                                    <Col span={12}>
+                                        <Button
+                                            block
+                                            onClick={() => form.setFieldsValue({
+                                                email: 'admin@gmail.com',
+                                                password: '!QAZ1qaz'
+                                            })}
+                                            style={{ height: '40px', borderRadius: '8px' }}
+                                        >
+                                            Demo Admin
+                                        </Button>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Button
+                                            block
+                                            onClick={() => form.setFieldsValue({
+                                                email: 'employee@gmail.com', // Updated per user request/code view
+                                                password: '!QAZ1qaz'
+                                            })}
+                                            style={{ height: '40px', borderRadius: '8px' }}
+                                        >
+                                            Demo Employee
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </div>
+
+                            <div style={{ textAlign: 'center', marginTop: '32px' }}>
+                                <Text type="secondary">Don't have an account? </Text>
+                                <Link to="/register" style={{ fontWeight: 600 }}>Create an account</Link>
+                            </div>
+                        </Form>
                     </div>
-                </Form>
-            </Card>
+                </Col>
+            </Row>
         </div>
     );
 };

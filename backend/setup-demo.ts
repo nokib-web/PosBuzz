@@ -17,8 +17,8 @@ async function main() {
     console.log(`Admin set up: ${admin.email}`);
 
     // Employee
-    const empEmail = 'employee@demo.com';
-    const empPass = 'password123';
+    const empEmail = 'employee@gmail.com';
+    const empPass = '!QAZ1qaz';
     const empHash = await bcrypt.hash(empPass, 10);
 
     const employee = await prisma.user.upsert({
