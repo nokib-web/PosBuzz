@@ -153,7 +153,7 @@ const CreateSalePage: React.FC = () => {
         let scanner: Html5QrcodeScanner | null = null;
         if (isScannerOpen) {
             scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: { width: 250, height: 250 } }, false);
-            scanner.render((decodedText) => {
+            scanner.render((decodedText: string) => {
                 const product = productsData?.data.find(p => p.sku === decodedText);
                 if (product) {
                     handleAddToCartByProduct(product);
