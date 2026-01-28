@@ -26,16 +26,16 @@ export class SaleController {
     }
 
     @Get()
-    findAll(
+    async getSales(
         @Req() req,
         @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
         @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     ) {
-        return this.saleService.findAll(req.user.id, page, limit);
+        return this.saleService.getSales(page, limit);
     }
 
     @Get(':id')
-    findOne(@Req() req, @Param('id') id: string) {
-        return this.saleService.findOne(req.user.id, id);
+    async getSaleById(@Req() req, @Param('id') id: string) {
+        return this.saleService.getSaleById(id);
     }
 }
