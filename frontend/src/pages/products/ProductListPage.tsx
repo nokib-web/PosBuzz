@@ -16,6 +16,9 @@ const ProductListPage: React.FC = () => {
     const [search, setSearch] = useState('');
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [restockModalVisible, setRestockModalVisible] = useState(false);
+    const [selectedProductForRestock, setSelectedProductForRestock] = useState<Product | null>(null);
+    const [restockAmount, setRestockAmount] = useState<number | null>(null);
 
     // Fetch products
     const { data, isLoading, isFetching } = useQuery({
@@ -41,11 +44,28 @@ const ProductListPage: React.FC = () => {
         onSuccess: () => {
             message.success('Stock updated successfully');
             queryClient.invalidateQueries({ queryKey: ['products'] });
+            setRestockModalVisible(false);
+            setRestockAmount(null);
+            setSelectedProductForRestock(null);
         },
+        onError: (error: any) => {
+            message.error(error.response?.data?.message || 'Failed to update stock');
+        }
     });
 
-    const handleQuickRestock = (id: string, newStock: number) => {
-        restockMutation.mutate({ id, stock: newStock });
+    const openRestockModal = (product: Product) => {
+        setSelectedProductForRestock(product);
+        setRestockAmount(null);
+        setRestockModalVisible(true);
+    };
+
+    const handleRestockSubmit = () => {
+        if (selectedProductForRestock && restockAmount && restockAmount > 0) {
+            const newStock = selectedProductForRestock.stock_quantity + restockAmount;
+            restockMutation.mutate({ id: selectedProductForRestock.id, stock: newStock });
+        } else {
+            message.warning('Please enter a valid amount');
+        }
     };
 
     const handleEdit = (product: Product) => {
@@ -103,31 +123,7 @@ const ProductListPage: React.FC = () => {
                         type="primary"
                         ghost
                         icon={<ArrowUpOutlined />}
-                        onClick={() => {
-                            Modal.confirm({
-                                title: `Restock ${record.name}`,
-                                content: (
-                                    <div style={{ marginTop: 16 }}>
-                                        <Text>Current Stock: {record.stock_quantity}</Text>
-                                        <br />
-                                        <Text>How many units are you adding?</Text>
-                                        <InputNumber
-                                            autoFocus
-                                            min={1}
-                                            style={{ width: '100%', marginTop: 8 }}
-                                            onPressEnter={(e: any) => {
-                                                const val = parseInt(e.target.value);
-                                                if (val > 0) handleQuickRestock(record.id, record.stock_quantity + val);
-                                                Modal.destroyAll();
-                                            }}
-                                        />
-                                    </div>
-                                ),
-                                onOk: () => {
-                                    // This is handled by onPressEnter for speed, but standard onOk works too
-                                }
-                            });
-                        }}
+                        onClick={() => openRestockModal(record)}
                     >
                         Restock
                     </Button>
@@ -205,6 +201,28 @@ const ProductListPage: React.FC = () => {
                 onCancel={() => setIsModalVisible(false)}
                 product={editingProduct}
             />
+
+            <Modal
+                title={`Restock ${selectedProductForRestock?.name}`}
+                open={restockModalVisible}
+                onOk={handleRestockSubmit}
+                onCancel={() => setRestockModalVisible(false)}
+                confirmLoading={restockMutation.isPending}
+            >
+                <div style={{ marginTop: 16 }}>
+                    <Text>Current Stock: {selectedProductForRestock?.stock_quantity}</Text>
+                    <br />
+                    <Text>How many units are you adding?</Text>
+                    <InputNumber
+                        autoFocus
+                        min={1}
+                        style={{ width: '100%', marginTop: 8 }}
+                        value={restockAmount}
+                        onChange={(value) => setRestockAmount(value)}
+                        onPressEnter={handleRestockSubmit}
+                    />
+                </div>
+            </Modal>
         </Card>
     );
 };

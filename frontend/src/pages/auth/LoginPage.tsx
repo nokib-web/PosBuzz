@@ -108,6 +108,36 @@ const LoginPage: React.FC = () => {
                         <Text type="secondary">Don't have an account? </Text>
                         <Link to="/register" style={{ color: '#1677ff' }}>Register now</Link>
                     </div>
+
+                    <div style={{ marginTop: 24, padding: '16px', background: '#f5f5f5', borderRadius: '8px' }}>
+                        <Text type="secondary" style={{ display: 'block', marginBottom: 8, textAlign: 'center', fontSize: '12px' }}>
+                            Demo Accounts
+                        </Text>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <Button
+                                block
+                                onClick={() => {
+                                    form.setFieldsValue({
+                                        email: 'admin@gmail.com',
+                                        password: '!QAZ1qaz'
+                                    });
+                                }}
+                            >
+                                Demo Admin
+                            </Button>
+                            <Button
+                                block
+                                onClick={() => {
+                                    form.setFieldsValue({
+                                        email: 'employee@demo.com',
+                                        password: 'password123'
+                                    });
+                                }}
+                            >
+                                Demo Employee
+                            </Button>
+                        </div>
+                    </div>
                 </Form>
             </Card>
         </div>
