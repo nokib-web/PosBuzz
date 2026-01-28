@@ -115,10 +115,8 @@ export class ProductService {
     }
 
     async update(id: string, dto: UpdateProductDto) {
-        // Check if product exists
-        await this.findOne(id);
+        const oldProduct = await this.findOne(id);
 
-        // If SKU is being updated, check for duplicates
         if (dto.sku) {
             const existingSku = await this.prisma.product.findFirst({
                 where: { sku: dto.sku, id: { not: id } },
@@ -133,11 +131,31 @@ export class ProductService {
             data: dto,
         });
 
-        // Invalidate caches
+        // Log if stock changed
+        if (dto.stock_quantity !== undefined && dto.stock_quantity !== oldProduct.stock_quantity) {
+            const diff = dto.stock_quantity - oldProduct.stock_quantity;
+            await this.logInventory(id, diff > 0 ? 'RESTOCK' : 'ADJUSTMENT', diff);
+        }
+
         await this.clearProductCache(id);
         await this.clearListCache();
 
         return product;
+    }
+
+    private async logInventory(productId: string, type: 'RESTOCK' | 'SALE' | 'ADJUSTMENT' | 'RETURN', quantity: number) {
+        try {
+            // @ts-ignore - Prisma needs regeneration
+            await this.prisma.inventoryLog.create({
+                data: {
+                    productId,
+                    type,
+                    quantity,
+                }
+            });
+        } catch (e) {
+            console.warn('Failed to log inventory change:', e.message);
+        }
     }
 
     async remove(id: string) {

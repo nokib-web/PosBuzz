@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Table, Button, Input, Space, Card, Typography, Popconfirm, message, Tag } from 'antd';
-import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Button, Input, Space, Card, Typography, Popconfirm, message, Tag, Modal, InputNumber } from 'antd';
+import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined, ArrowUpOutlined } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productService } from '../../services/product.service';
 import { Product } from '../../types/product.types';
 import ProductFormModal from '../../components/products/ProductFormModal';
 import dayjs from 'dayjs';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const ProductListPage: React.FC = () => {
     const queryClient = useQueryClient();
@@ -34,6 +34,19 @@ const ProductListPage: React.FC = () => {
             message.error(error.response?.data?.message || 'Failed to delete product');
         },
     });
+
+    const restockMutation = useMutation({
+        mutationFn: ({ id, stock }: { id: string; stock: number }) =>
+            productService.updateProduct(id, { stock_quantity: stock }),
+        onSuccess: () => {
+            message.success('Stock updated successfully');
+            queryClient.invalidateQueries({ queryKey: ['products'] });
+        },
+    });
+
+    const handleQuickRestock = (id: string, newStock: number) => {
+        restockMutation.mutate({ id, stock: newStock });
+    };
 
     const handleEdit = (product: Product) => {
         setEditingProduct(product);
@@ -86,6 +99,38 @@ const ProductListPage: React.FC = () => {
             key: 'actions',
             render: (_: any, record: Product) => (
                 <Space size="middle">
+                    <Button
+                        type="primary"
+                        ghost
+                        icon={<ArrowUpOutlined />}
+                        onClick={() => {
+                            Modal.confirm({
+                                title: `Restock ${record.name}`,
+                                content: (
+                                    <div style={{ marginTop: 16 }}>
+                                        <Text>Current Stock: {record.stock_quantity}</Text>
+                                        <br />
+                                        <Text>How many units are you adding?</Text>
+                                        <InputNumber
+                                            autoFocus
+                                            min={1}
+                                            style={{ width: '100%', marginTop: 8 }}
+                                            onPressEnter={(e: any) => {
+                                                const val = parseInt(e.target.value);
+                                                if (val > 0) handleQuickRestock(record.id, record.stock_quantity + val);
+                                                Modal.destroyAll();
+                                            }}
+                                        />
+                                    </div>
+                                ),
+                                onOk: () => {
+                                    // This is handled by onPressEnter for speed, but standard onOk works too
+                                }
+                            });
+                        }}
+                    >
+                        Restock
+                    </Button>
                     <Button
                         type="text"
                         icon={<EditOutlined />}

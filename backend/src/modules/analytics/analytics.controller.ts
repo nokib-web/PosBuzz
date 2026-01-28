@@ -31,4 +31,10 @@ export class AnalyticsController {
     getTopProducts(@Query('limit') limit?: string) {
         return this.analyticsService.getTopSellingProducts(limit ? parseInt(limit) : 5);
     }
+
+    @Get('staff-performance')
+    @ApiOperation({ summary: 'Get staff performance leaderboard' })
+    getStaffPerformance() {
+        return this.analyticsService.getStaffPerformance();
+    }
 }

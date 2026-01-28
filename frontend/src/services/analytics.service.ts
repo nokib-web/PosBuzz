@@ -31,4 +31,13 @@ export const analyticsService = {
         });
         return response.data;
     },
+
+    getStaffPerformance: async () => {
+        const response = await axios.get(`${API_URL}/analytics/staff-performance`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+        return response.data;
+    },
 };

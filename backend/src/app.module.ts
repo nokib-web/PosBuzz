@@ -11,6 +11,8 @@ import { SaleModule } from './modules/sale/sale.module';
 import { HealthController } from './modules/health/health.controller';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { CustomerModule } from './modules/customer/customer.module';
+import { SupplierModule } from './modules/supplier/supplier.module';
+import { PromotionModule } from './modules/promotion/promotion.module';
 import configuration from './config/configuration';
 import redisConfig from './config/redis.config';
 
@@ -28,6 +30,8 @@ import redisConfig from './config/redis.config';
     SaleModule,
     AnalyticsModule,
     CustomerModule,
+    SupplierModule,
+    PromotionModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],

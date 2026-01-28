@@ -9,6 +9,8 @@ import {
     MenuUnfoldOutlined,
     MenuFoldOutlined,
     UserOutlined,
+    ShopOutlined,
+    GiftOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation, Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -55,6 +57,16 @@ const MainLayout: React.FC = () => {
             key: '/customers',
             icon: <UserOutlined />,
             label: <Link to="/customers">Customers</Link>,
+        },
+        {
+            key: '/suppliers',
+            icon: <ShopOutlined />,
+            label: <Link to="/suppliers">Suppliers</Link>,
+        },
+        {
+            key: '/promotions',
+            icon: <GiftOutlined />,
+            label: <Link to="/promotions">Promotions</Link>,
         },
     ];
 

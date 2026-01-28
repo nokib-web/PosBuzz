@@ -21,7 +21,6 @@ import {
     DeleteOutlined,
     ShoppingCartOutlined,
     ScanOutlined,
-    UserAddOutlined,
     PrinterOutlined,
     FilePdfOutlined,
     CreditCardOutlined,
@@ -31,7 +30,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productService } from '../../services/product.service';
 import { saleService } from '../../services/sale.service';
 import { customerService } from '../../services/customer.service';
-import { useNavigate } from 'react-router-dom';
+import { promotionService } from '../../services/promotion.service';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Html5QrcodeScanner } from 'html5-qrcode';
@@ -50,12 +49,12 @@ interface CartItem {
 }
 
 const CreateSalePage: React.FC = () => {
-    const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [cart, setCart] = useState<CartItem[]>([]);
     const [selectedProductId, setSelectedProductId] = useState<string | undefined>(undefined);
     const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
     const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(undefined);
+    const [selectedPromotionId, setSelectedPromotionId] = useState<string | undefined>(undefined);
     const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'CARD' | 'OTHER'>('CASH');
     const [isScannerOpen, setIsScannerOpen] = useState(false);
 
@@ -73,6 +72,12 @@ const CreateSalePage: React.FC = () => {
     const { data: customersData } = useQuery({
         queryKey: ['customers-all'],
         queryFn: customerService.getCustomers,
+    });
+
+    // Fetch active promotions
+    const { data: activePromos } = useQuery({
+        queryKey: ['promotions-active'],
+        queryFn: promotionService.getActive,
     });
 
     const selectedProduct = productsData?.data.find(p => p.id === selectedProductId);
@@ -215,8 +220,28 @@ const CreateSalePage: React.FC = () => {
         setCart(cart.map(i => i.productId === productId ? { ...i, quantity } : i));
     };
 
-    const calculateTotal = () => {
+    const calculateSubtotal = () => {
         return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    };
+
+    const calculateDiscount = () => {
+        if (!selectedPromotionId || !activePromos) return 0;
+        const promo = activePromos.find((p: any) => p.id === selectedPromotionId);
+        if (!promo) return 0;
+
+        const subtotal = calculateSubtotal();
+        if (promo.minSpend && subtotal < Number(promo.minSpend)) return 0;
+
+        if (promo.type === 'PERCENTAGE') {
+            return subtotal * (Number(promo.value) / 100);
+        } else if (promo.type === 'FIXED_AMOUNT') {
+            return Math.min(subtotal, Number(promo.value));
+        }
+        return 0;
+    };
+
+    const calculateTotal = () => {
+        return calculateSubtotal() - calculateDiscount();
     };
 
     const handleCompleteSale = () => {
@@ -255,6 +280,7 @@ const CreateSalePage: React.FC = () => {
                 quantity: item.quantity
             })),
             customerId: selectedCustomerId,
+            promotionId: selectedPromotionId,
             paymentMethod
         };
         saleMutation.mutate(saleDto);
@@ -488,6 +514,30 @@ const CreateSalePage: React.FC = () => {
                         </Select>
                     </div>
 
+                    <div style={{ marginBottom: '20px' }}>
+                        <Text strong>Promotion / Coupon</Text>
+                        <Select
+                            style={{ width: '100%', marginTop: '8px' }}
+                            placeholder="Select Active Offer"
+                            value={selectedPromotionId}
+                            onChange={setSelectedPromotionId}
+                            allowClear
+                        >
+                            {activePromos?.map((p: any) => (
+                                <Option key={p.id} value={p.id}>
+                                    {p.name} ({p.type === 'PERCENTAGE' ? `${p.value}% Off` : `$${p.value} Off`})
+                                </Option>
+                            ))}
+                        </Select>
+                        {selectedPromotionId && (
+                            <div style={{ marginTop: 4 }}>
+                                <Tag color="orange" visible={calculateDiscount() === 0}>
+                                    Min spend not met
+                                </Tag>
+                            </div>
+                        )}
+                    </div>
+
                     <Divider />
 
                     <div style={{ marginBottom: '20px' }}>
@@ -507,8 +557,12 @@ const CreateSalePage: React.FC = () => {
 
                     <div style={{ background: '#f5f5f5', padding: '16px', borderRadius: '8px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                            <Text type="secondary">Product Count</Text>
-                            <Text strong>{cart.length} items</Text>
+                            <Text type="secondary">Subtotal</Text>
+                            <Text strong>${calculateSubtotal().toFixed(2)}</Text>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                            <Text type="secondary">Discount Applied</Text>
+                            <Text strong style={{ color: '#f5222d' }}>-${calculateDiscount().toFixed(2)}</Text>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
                             <Title level={4} style={{ margin: 0 }}>Total Pay</Title>

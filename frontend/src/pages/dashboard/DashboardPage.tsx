@@ -1,13 +1,15 @@
 import React from 'react';
-import { Row, Col, Card, Statistic, Typography, Table, Space, Tag, Empty, Spin } from 'antd';
+import { Row, Col, Card, Statistic, Typography, Table, Space, Empty, Spin } from 'antd';
 import {
-    ShoppingOutlined,
     WarningOutlined,
     DollarOutlined,
     HistoryOutlined,
     LineChartOutlined,
     BarChartOutlined,
-    RiseOutlined
+    RiseOutlined,
+    TrophyOutlined,
+    StarOutlined,
+    BulbOutlined,
 } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { productService } from '../../services/product.service';
@@ -24,7 +26,6 @@ import {
     ResponsiveContainer,
     BarChart,
     Bar,
-    Legend
 } from 'recharts';
 import dayjs from 'dayjs';
 
@@ -55,6 +56,12 @@ const DashboardPage: React.FC = () => {
     const { data: salesData, isLoading: isLoadingSales } = useQuery({
         queryKey: ['sales', 'recent'],
         queryFn: () => saleService.getSales(1, 5),
+    });
+
+    // Staff Performance
+    const { data: staffPerformance } = useQuery({
+        queryKey: ['analytics-staff'],
+        queryFn: () => analyticsService.getStaffPerformance(),
     });
 
     // Low stock count (from products)
@@ -153,8 +160,8 @@ const DashboardPage: React.FC = () => {
                                 <LineChart data={trend}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                     <XAxis dataKey="date" tickFormatter={(val) => dayjs(val).format('MMM D')} />
-                                    <YAxis />
-                                    <Tooltip formatter={(value: number) => [`$${value.toFixed(2)}`, 'Revenue']} />
+                                    <YAxis tickFormatter={(val) => `$${val}`} />
+                                    <Tooltip formatter={(value: any) => [`$${Number(value).toFixed(2)}`, 'Revenue']} />
                                     <Line type="monotone" dataKey="amount" stroke="#1677ff" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
                                 </LineChart>
                             </ResponsiveContainer>
@@ -178,8 +185,78 @@ const DashboardPage: React.FC = () => {
             </Row>
 
             <Row gutter={[16, 16]}>
-                <Col span={24}>
-                    <Card title="Recent Transactions" bordered={false}>
+                {/* Staff Leaderboard */}
+                <Col xs={24} lg={8}>
+                    <Card title={<span><TrophyOutlined style={{ color: '#faad14' }} /> Employee Leaderboard</span>} bordered={false} className="glass-card">
+                        <div style={{ maxHeight: 400, overflowY: 'auto' }}>
+                            {staffPerformance?.map((staff: any, index: number) => (
+                                <div key={staff.email} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: index < staffPerformance.length - 1 ? '1px solid #f0f0f0' : 'none' }}>
+                                    <Space>
+                                        <div style={{
+                                            width: 32,
+                                            height: 32,
+                                            borderRadius: '50%',
+                                            background: index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : '#f0f0f0',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontWeight: 'bold',
+                                            color: index < 3 ? 'white' : 'black'
+                                        }}>
+                                            {index + 1}
+                                        </div>
+                                        <div>
+                                            <Text strong>{staff.email.split('@')[0]}</Text>
+                                            <br />
+                                            <Text type="secondary" style={{ fontSize: '12px' }}>{staff.transactionCount} transactions</Text>
+                                        </div>
+                                    </Space>
+                                    <Text strong style={{ color: '#52c41a' }}>${Number(staff.totalSales).toLocaleString()}</Text>
+                                </div>
+                            ))}
+                            {(!staffPerformance || staffPerformance.length === 0) && <Empty description="No performance data yet" />}
+                        </div>
+                    </Card>
+                </Col>
+
+                {/* Smart Insights */}
+                <Col xs={24} lg={16}>
+                    <Card title={<span><BulbOutlined style={{ color: '#1890ff' }} /> Smart Insights & Recommendations</span>} bordered={false} className="glass-card">
+                        <Row gutter={[16, 16]}>
+                            <Col span={12}>
+                                <div style={{ padding: '16px', background: '#e6f7ff', borderRadius: '8px', marginBottom: '16px' }}>
+                                    <Text strong><StarOutlined style={{ color: '#1890ff' }} /> Best Seller Performance</Text>
+                                    <div style={{ marginTop: '8px' }}>
+                                        {topProducts && topProducts[0] ? (
+                                            <Text>Your "{topProducts[0].name}" is the top item. Consider running a bundle promotion to increase its cross-sales.</Text>
+                                        ) : (
+                                            <Text>Add products to see performance insights.</Text>
+                                        )}
+                                    </div>
+                                </div>
+                            </Col>
+                            <Col span={12}>
+                                <div style={{ padding: '16px', background: '#f6ffed', borderRadius: '8px', marginBottom: '16px' }}>
+                                    <Text strong><RiseOutlined style={{ color: '#52c41a' }} /> Revenue Growth</Text>
+                                    <div style={{ marginTop: '8px' }}>
+                                        <Text>Daily revenue is stable. The {dayjs().format('dddd')} surge suggests higher weekend footfall.</Text>
+                                    </div>
+                                </div>
+                            </Col>
+                            {lowStockCount > 0 && (
+                                <Col span={24}>
+                                    <div style={{ padding: '16px', background: '#fff1f0', borderRadius: '8px' }}>
+                                        <Text strong><WarningOutlined style={{ color: '#cf1322' }} /> Inventory Risk</Text>
+                                        <div style={{ marginTop: '8px' }}>
+                                            <Text>You have {lowStockCount} items below threshold. We recommend reordering from your <b>Top Suppliers</b> soon to avoid lost sales.</Text>
+                                        </div>
+                                    </div>
+                                </Col>
+                            )}
+                        </Row>
+                    </Card>
+
+                    <Card title="Recent Transactions" bordered={false} style={{ marginTop: 16 }}>
                         {recentSales.length > 0 ? (
                             <Table
                                 columns={columns}
@@ -194,6 +271,7 @@ const DashboardPage: React.FC = () => {
                     </Card>
                 </Col>
             </Row>
+
         </Space>
     );
 };

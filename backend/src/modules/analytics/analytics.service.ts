@@ -71,7 +71,7 @@ export class AnalyticsService {
     }
 
     async getTopSellingProducts(limit: number = 5) {
-        const topProducts = await this.prisma.saleItem.groupBy({
+        const topProducts = await (this.prisma as any).saleItem.groupBy({
             by: ['productId'],
             _sum: {
                 quantity: true,
@@ -86,7 +86,7 @@ export class AnalyticsService {
         });
 
         const products = await Promise.all(
-            topProducts.map(async (item) => {
+            topProducts.map(async (item: any) => {
                 const product = await this.prisma.product.findUnique({
                     where: { id: item.productId },
                     select: { name: true, sku: true },
@@ -100,5 +100,38 @@ export class AnalyticsService {
         );
 
         return products;
+    }
+
+    async getStaffPerformance() {
+        const performance = await (this.prisma as any).sale.groupBy({
+            by: ['userId'],
+            _sum: {
+                total_amount: true,
+            },
+            _count: {
+                id: true,
+            },
+            orderBy: {
+                _sum: {
+                    total_amount: 'desc',
+                },
+            },
+        });
+
+        const staffData = await Promise.all(
+            performance.map(async (p: any) => {
+                const user = await (this.prisma as any).user.findUnique({
+                    where: { id: p.userId },
+                    select: { email: true, name: true },
+                });
+                return {
+                    ...user,
+                    totalSales: p._sum.total_amount,
+                    transactionCount: p._count.id,
+                };
+            }),
+        );
+
+        return staffData;
     }
 }

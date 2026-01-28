@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
-import { Modal, Form, Input, InputNumber, message } from 'antd';
+import { Modal, Form, Input, InputNumber, message, Select, Row, Col } from 'antd';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { productService } from '../../services/product.service';
+import { supplierService } from '../../services/supplier.service';
+import { useQuery } from '@tanstack/react-query';
 import { Product, CreateProductDto } from '../../types/product.types';
 
 interface ProductFormModalProps {
@@ -14,6 +16,11 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onCancel, pro
     const [form] = Form.useForm();
     const queryClient = useQueryClient();
     const isEditing = !!product;
+
+    const { data: suppliers } = useQuery({
+        queryKey: ['suppliers'],
+        queryFn: supplierService.getAll
+    });
 
     useEffect(() => {
         if (open && product) {
@@ -77,26 +84,69 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onCancel, pro
                     <Input placeholder="Enter unique SKU" disabled={isEditing} />
                 </Form.Item>
 
+                <Row gutter={16}>
+                    <Col span={12}>
+                        <Form.Item
+                            name="price"
+                            label="Selling Price"
+                            rules={[{ required: true, message: 'Please enter price' }]}
+                        >
+                            <InputNumber
+                                style={{ width: '100%' }}
+                                min={0.01}
+                                precision={2}
+                                prefix="$"
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item
+                            name="costPrice"
+                            label="Cost Price"
+                            rules={[{ required: true, message: 'Please enter cost price' }]}
+                        >
+                            <InputNumber
+                                style={{ width: '100%' }}
+                                min={0}
+                                precision={2}
+                                prefix="$"
+                                placeholder="Buying price"
+                            />
+                        </Form.Item>
+                    </Col>
+                </Row>
+
                 <Form.Item
-                    name="price"
-                    label="Price"
-                    rules={[{ required: true, message: 'Please enter price' }]}
+                    name="supplierId"
+                    label="Supplier / Vendor"
                 >
-                    <InputNumber
-                        style={{ width: '100%' }}
-                        min={0.01}
-                        precision={2}
-                        prefix="$"
+                    <Select
+                        placeholder="Select a supplier (Optional)"
+                        allowClear
+                        options={suppliers?.map((s: any) => ({ value: s.id, label: s.name }))}
                     />
                 </Form.Item>
 
-                <Form.Item
-                    name="stock_quantity"
-                    label="Stock Quantity"
-                    rules={[{ required: true, message: 'Please enter stock quantity' }]}
-                >
-                    <InputNumber style={{ width: '100%' }} min={0} precision={0} />
-                </Form.Item>
+                <Row gutter={16}>
+                    <Col span={12}>
+                        <Form.Item
+                            name="stock_quantity"
+                            label="Stock Quantity"
+                            rules={[{ required: true, message: 'Please enter stock quantity' }]}
+                        >
+                            <InputNumber style={{ width: '100%' }} min={0} precision={0} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item
+                            name="lowStockThreshold"
+                            label="Low Stock Alert Level"
+                            rules={[{ required: true }]}
+                        >
+                            <InputNumber style={{ width: '100%' }} min={1} precision={0} />
+                        </Form.Item>
+                    </Col>
+                </Row>
             </Form>
         </Modal>
     );

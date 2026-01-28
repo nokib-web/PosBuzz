@@ -22,5 +22,9 @@ export class CreateSaleDto {
     customerId?: string;
 
     @IsOptional()
+    @IsUUID()
+    promotionId?: string;
+
+    @IsOptional()
     paymentMethod?: 'CASH' | 'CARD' | 'OTHER';
 }

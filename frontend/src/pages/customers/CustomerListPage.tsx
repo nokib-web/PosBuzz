@@ -112,10 +112,24 @@ const CustomerListPage: React.FC = () => {
             render: (phone: string) => phone || '-',
         },
         {
+            title: 'Tier',
+            dataIndex: 'tier',
+            key: 'tier',
+            render: (tier: string) => {
+                const colors: Record<string, string> = {
+                    BRONZE: '#CD7F32',
+                    SILVER: '#C0C0C0',
+                    GOLD: '#FFD700',
+                    PLATINUM: '#8e44ad'
+                };
+                return <Tag color={colors[tier] || 'default'} style={{ fontWeight: 'bold' }}>{tier}</Tag>;
+            },
+        },
+        {
             title: 'Points',
             dataIndex: 'points',
             key: 'points',
-            render: (points: number) => <Tag color="gold">{points} pts</Tag>,
+            render: (points: number) => <Text strong style={{ color: '#d48806' }}>{points.toLocaleString()} pts</Text>,
         },
         {
             title: 'Joined',

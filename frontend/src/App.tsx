@@ -11,6 +11,8 @@ import ProductListPage from './pages/products/ProductListPage';
 import CreateSalePage from './pages/sales/CreateSalePage';
 import SaleHistoryPage from './pages/sales/SaleHistoryPage';
 import CustomerListPage from './pages/customers/CustomerListPage';
+import SupplierListPage from './pages/suppliers/SupplierListPage';
+import PromotionListPage from './pages/promotions/PromotionListPage';
 
 function App() {
     return (
@@ -42,6 +44,8 @@ function App() {
                             <Route path="/sales/new" element={<CreateSalePage />} />
                             <Route path="/sales" element={<SaleHistoryPage />} />
                             <Route path="/customers" element={<CustomerListPage />} />
+                            <Route path="/suppliers" element={<SupplierListPage />} />
+                            <Route path="/promotions" element={<PromotionListPage />} />
 
                             {/* Redirect root to dashboard */}
                             <Route path="/" element={<Navigate to="/dashboard" replace />} />
