@@ -82,16 +82,6 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        // Temporary: Auto-upgrade admin@gmail.com to ADMIN role for development/testing convenience
-        if (user.email === 'admin@gmail.com' && user.role !== Role.ADMIN) {
-            this.logger.log(`Upgrading ${user.email} to ADMIN role`);
-            const updatedUser = await this.prisma.user.update({
-                where: { id: user.id },
-                data: { role: Role.ADMIN }
-            });
-            user.role = updatedUser.role;
-        }
-
         // Generate token
         const token = await this.generateToken(user.id, user.email, user.role);
 
