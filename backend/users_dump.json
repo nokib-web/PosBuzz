@@ -1,0 +1,32 @@
+[
+  {
+    "id": "aee35e40-705d-4aab-912f-1d641365a32e",
+    "email": "hasanokib1@gmail.com",
+    "password": "$2b$10$.rW8UMTWbu6KBSe9C37j1.8XKqKzrDYHJwVgmuyYVGRA0hpldy/Q.",
+    "name": null,
+    "role": "CASHIER",
+    "active": true,
+    "createdAt": "2026-01-26T16:56:11.006Z",
+    "updatedAt": "2026-01-26T16:56:11.006Z"
+  },
+  {
+    "id": "61c5b8a2-ba43-4ff6-a9e5-418911168654",
+    "email": "nokibnokib1@gmail.com",
+    "password": "$2b$10$BBLZSKI3FkCoFxCc7y076u39W0JpL6s1iJ3kDbSCLeWWUYoYCXgdW",
+    "name": null,
+    "role": "CASHIER",
+    "active": true,
+    "createdAt": "2026-01-27T15:08:13.535Z",
+    "updatedAt": "2026-01-27T15:08:13.535Z"
+  },
+  {
+    "id": "43a5023f-4bae-42ea-b9f6-9f45752f2675",
+    "email": "admin@gmail.com",
+    "password": "$2b$10$W.RKY5Z.OMEZ30aloLKjaOvWHzJRi0ehpaIMx7kYaonhHd7a44u3.",
+    "name": null,
+    "role": "CASHIER",
+    "active": true,
+    "createdAt": "2026-01-28T05:48:21.055Z",
+    "updatedAt": "2026-01-28T05:48:21.055Z"
+  }
+]
