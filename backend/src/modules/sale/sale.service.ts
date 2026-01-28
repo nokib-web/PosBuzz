@@ -7,14 +7,14 @@ export class SaleService {
     constructor(private readonly prisma: PrismaService) { }
 
     /**
-     * Process a new sale with atomic stock management
+     * Process a new sale with atomic stock management and profit tracking
      */
     async create(userId: string, dto: CreateSaleDto) {
         return this.prisma.$transaction(async (tx) => {
             let total_amount = 0;
             const saleItemsToCreate: any[] = [];
 
-            // 1. Process each item to check stock and calculate subtotals
+            // 1. Process each item
             for (const item of dto.items) {
                 const product = await tx.product.findUnique({
                     where: { id: item.productId },
@@ -24,7 +24,7 @@ export class SaleService {
                     throw new NotFoundException(`Product with ID ${item.productId} not found`);
                 }
 
-                // 2. Check stock availability
+                // 2. Check stock
                 if (product.stock_quantity < item.quantity) {
                     throw new BadRequestException(
                         `Insufficient stock for product: ${product.name}. Available: ${product.stock_quantity}, Requested: ${item.quantity}`,
@@ -35,9 +35,7 @@ export class SaleService {
                 await tx.product.update({
                     where: { id: product.id },
                     data: {
-                        stock_quantity: {
-                            decrement: item.quantity,
-                        },
+                        stock_quantity: { decrement: item.quantity },
                     },
                 });
 
@@ -48,15 +46,32 @@ export class SaleService {
                     productId: product.id,
                     quantity: item.quantity,
                     price_at_sale: product.price,
+                    cost_price_at_sale: product.costPrice,
                     subtotal: subtotal,
                 });
             }
 
-            // 4. Create the main Sale record
+            // 4. Update Customer Points if customerId is provided
+            if (dto.customerId) {
+                const pointsEarned = Math.floor(total_amount / 10);
+                if (pointsEarned > 0) {
+                    await tx.customer.update({
+                        where: { id: dto.customerId },
+                        data: {
+                            points: { increment: pointsEarned },
+                        },
+                    });
+                }
+            }
+
+            // 5. Create Sale
             const sale = await tx.sale.create({
                 data: {
                     userId,
+                    customerId: dto.customerId,
                     total_amount,
+                    // @ts-ignore - Prisma client needs regeneration
+                    paymentMethod: (dto.paymentMethod as any) || 'CASH',
                     items: {
                         create: saleItemsToCreate,
                     },
@@ -67,6 +82,7 @@ export class SaleService {
                             product: true,
                         },
                     },
+                    customer: true,
                 },
             });
 

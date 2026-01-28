@@ -16,13 +16,17 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { QueryProductDto } from './dto/query-product.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Role } from '@prisma/client';
 
 @Controller('products')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductController {
     constructor(private readonly productService: ProductService) { }
 
     @Post()
-    @UseGuards(JwtAuthGuard)
+    @Roles(Role.ADMIN)
     @HttpCode(HttpStatus.CREATED)
     create(@Body() createProductDto: CreateProductDto) {
         return this.productService.create(createProductDto);
@@ -39,13 +43,13 @@ export class ProductController {
     }
 
     @Put(':id')
-    @UseGuards(JwtAuthGuard)
+    @Roles(Role.ADMIN)
     update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
         return this.productService.update(id, updateProductDto);
     }
 
     @Delete(':id')
-    @UseGuards(JwtAuthGuard)
+    @Roles(Role.ADMIN)
     remove(@Param('id') id: string) {
         return this.productService.remove(id);
     }

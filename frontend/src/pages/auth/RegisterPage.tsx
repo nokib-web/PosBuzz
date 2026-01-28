@@ -40,9 +40,10 @@ const RegisterPage: React.FC = () => {
             minHeight: '100vh',
             backgroundColor: '#f0f2f5'
         }}>
-            <Card style={{ width: 450, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+            <Card style={{ width: 450, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', borderRadius: 12 }}>
                 <div style={{ textAlign: 'center', marginBottom: 24 }}>
-                    <Title level={2} style={{ marginBottom: 0 }}>Create Account</Title>
+                    <img src="/favicon.png" alt="POSBuzz Logo" style={{ width: 80, marginBottom: 16 }} />
+                    <Title level={2} style={{ margin: 0 }}>Create Account</Title>
                     <Text type="secondary">Join POSBuzz for smart inventory management</Text>
                 </div>
 

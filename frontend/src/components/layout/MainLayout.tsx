@@ -51,6 +51,11 @@ const MainLayout: React.FC = () => {
             icon: <HistoryOutlined />,
             label: <Link to="/sales">Sales History</Link>,
         },
+        {
+            key: '/customers',
+            icon: <UserOutlined />,
+            label: <Link to="/customers">Customers</Link>,
+        },
     ];
 
     return (
@@ -62,10 +67,18 @@ const MainLayout: React.FC = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    borderRadius: 8
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    borderRadius: 8,
+                    overflow: 'hidden'
                 }}>
-                    <h2 style={{ color: 'white', margin: 0 }}>{collapsed ? 'PB' : 'POSBuzz'}</h2>
+                    {collapsed ? (
+                        <img src="/favicon.png" alt="Logo" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+                    ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <img src="/favicon.png" alt="Logo" style={{ width: 40, height: 40, objectFit: 'contain' }} />
+                            <h2 style={{ color: 'white', margin: 0, fontSize: '1.2rem', fontWeight: 600 }}>POSBuzz</h2>
+                        </div>
+                    )}
                 </div>
                 <Menu
                     theme="dark"

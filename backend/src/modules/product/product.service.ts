@@ -33,49 +33,62 @@ export class ProductService {
     }
 
     async findAll(query: QueryProductDto) {
-        const { page = 1, limit = 10, search } = query;
-        const skip = (page - 1) * limit;
-        const cacheKey = `products:page:${page}:limit:${limit}:search:${search || 'none'}`;
+        try {
+            const { page = 1, limit = 10, search } = query;
+            const skip = (page - 1) * limit;
+            const cacheKey = `products:page:${page}:limit:${limit}:search:${search || 'none'}`;
 
-        // Try to get from cache
-        const cachedData = await this.redis.get(cacheKey);
-        if (cachedData) {
-            return JSON.parse(cachedData);
-        }
-
-        // Prepare where clause
-        const where = search
-            ? {
-                OR: [
-                    { name: { contains: search, mode: 'insensitive' as const } },
-                    { sku: { contains: search, mode: 'insensitive' as const } },
-                ],
+            // Try to get from cache
+            try {
+                const cachedData = await this.redis.get(cacheKey);
+                if (cachedData) {
+                    return JSON.parse(cachedData);
+                }
+            } catch (cacheError) {
+                console.warn('Cache fetch failed:', cacheError.message);
             }
-            : {};
 
-        // Get data from DB
-        const [data, total] = await Promise.all([
-            this.prisma.product.findMany({
-                where,
-                skip,
-                take: limit,
-                orderBy: { createdAt: 'desc' },
-            }),
-            this.prisma.product.count({ where }),
-        ]);
+            // Prepare where clause
+            const where = search
+                ? {
+                    OR: [
+                        { name: { contains: search, mode: 'insensitive' as const } },
+                        { sku: { contains: search, mode: 'insensitive' as const } },
+                    ],
+                }
+                : {};
 
-        const result = {
-            data,
-            total,
-            page,
-            limit,
-            totalPages: Math.ceil(total / limit),
-        };
+            // Get data from DB
+            const [data, total] = await Promise.all([
+                this.prisma.product.findMany({
+                    where,
+                    skip,
+                    take: Number(limit),
+                    orderBy: { createdAt: 'desc' },
+                }),
+                this.prisma.product.count({ where }),
+            ]);
 
-        // Save to cache
-        await this.redis.set(cacheKey, JSON.stringify(result), 'EX', this.CACHE_TTL);
+            const result = {
+                data,
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            };
 
-        return result;
+            // Save to cache
+            try {
+                await this.redis.set(cacheKey, JSON.stringify(result), 'EX', this.CACHE_TTL);
+            } catch (cacheError) {
+                console.warn('Cache save failed:', cacheError.message);
+            }
+
+            return result;
+        } catch (error) {
+            console.error('CRITICAL ERROR in ProductService.findAll:', error);
+            throw error;
+        }
     }
 
     async findOne(id: string) {
@@ -139,6 +152,16 @@ export class ProductService {
         await this.clearListCache();
 
         return { message: 'Product deleted successfully' };
+    }
+
+    async getLowStock() {
+        return this.prisma.product.findMany({
+            where: {
+                stock_quantity: {
+                    lte: 10 // Temporary fixed value until Prisma column comparison is handled
+                }
+            }
+        });
     }
 
     // --- Cache Invalidation Helpers ---

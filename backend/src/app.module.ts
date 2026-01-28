@@ -9,6 +9,8 @@ import { RedisModule } from './common/redis/redis.module';
 import { ProductModule } from './modules/product/product.module';
 import { SaleModule } from './modules/sale/sale.module';
 import { HealthController } from './modules/health/health.controller';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { CustomerModule } from './modules/customer/customer.module';
 import configuration from './config/configuration';
 import redisConfig from './config/redis.config';
 
@@ -24,6 +26,8 @@ import redisConfig from './config/redis.config';
     RedisModule,
     ProductModule,
     SaleModule,
+    AnalyticsModule,
+    CustomerModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],

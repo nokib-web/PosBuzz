@@ -17,4 +17,12 @@ export class CreateProductDto {
     @IsNumber()
     @Min(0)
     stock_quantity: number;
+
+    @IsNumber()
+    @Min(0)
+    costPrice: number;
+
+    @IsNumber()
+    @Min(0)
+    lowStockThreshold: number;
 }

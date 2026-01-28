@@ -38,12 +38,13 @@ export class AuthService {
             select: {
                 id: true,
                 email: true,
+                role: true,
                 createdAt: true,
             },
         });
 
         // Generate token
-        const token = await this.generateToken(user.id, user.email);
+        const token = await this.generateToken(user.id, user.email, user.role);
 
         return {
             user,
@@ -72,12 +73,13 @@ export class AuthService {
         }
 
         // Generate token
-        const token = await this.generateToken(user.id, user.email);
+        const token = await this.generateToken(user.id, user.email, user.role);
 
         return {
             user: {
                 id: user.id,
                 email: user.email,
+                role: user.role,
             },
             access_token: token,
         };
@@ -86,8 +88,8 @@ export class AuthService {
     /**
      * Helper method to generate JWT
      */
-    private async generateToken(userId: string, email: string) {
-        const payload = { sub: userId, email };
+    private async generateToken(userId: string, email: string, role: string) {
+        const payload = { sub: userId, email, role };
         return this.jwtService.signAsync(payload);
     }
 }
