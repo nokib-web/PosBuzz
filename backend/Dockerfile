@@ -1,5 +1,8 @@
 # Build stage
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
+
+# Install build dependencies for native modules (like bcrypt) and Prisma
+RUN apk add --no-cache python3 make g++ openssl
 
 WORKDIR /app
 
@@ -13,11 +16,17 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Generate Prisma Client and build the application
+# Generate Prisma Client
+RUN npx prisma generate
+
+# Build the application
 RUN npm run build
 
 # Production stage
-FROM node:18-alpine
+FROM node:20-alpine
+
+# Install production runtime dependencies (Prisma needs openssl on Alpine)
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 
