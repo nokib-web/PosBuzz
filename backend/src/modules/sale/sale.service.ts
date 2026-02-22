@@ -1,10 +1,14 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateSaleDto } from './dto/create-sale.dto';
+import { ProductService } from '../product/product.service';
 
 @Injectable()
 export class SaleService {
-    constructor(private readonly prisma: PrismaService) { }
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly productService: ProductService,
+    ) { }
 
     /**
      * Process a new sale with atomic stock management and profit tracking
@@ -126,6 +130,16 @@ export class SaleService {
                     customer: true,
                 },
             });
+
+            // 6. Invalidate Product Caches
+            try {
+                await this.productService.clearListCache();
+                for (const item of dto.items) {
+                    await this.productService.clearProductCache(item.productId);
+                }
+            } catch (cacheError) {
+                console.warn('Failed to invalidate product cache after sale:', cacheError.message);
+            }
 
             return sale;
         });

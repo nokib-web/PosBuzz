@@ -183,8 +183,7 @@ export class ProductService {
     }
 
     // --- Cache Invalidation Helpers ---
-
-    private async clearListCache() {
+    async clearListCache() {
         // Clear all keys matching products:*
         const keys = await this.redis.keys('products:*');
         if (keys.length > 0) {
@@ -192,7 +191,7 @@ export class ProductService {
         }
     }
 
-    private async clearProductCache(id: string) {
+    async clearProductCache(id: string) {
         await this.redis.del(`product:${id}`);
     }
 }
