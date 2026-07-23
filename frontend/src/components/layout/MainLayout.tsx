@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Button, Typography, Space, Drawer, Tag, Avatar } from 'antd';
+import { Layout, Menu, Button, Typography, Space, Drawer, Input, Badge, Avatar } from 'antd';
 import {
-    DashboardOutlined,
+    HomeOutlined,
     ShoppingOutlined,
     PlusCircleOutlined,
     HistoryOutlined,
@@ -11,8 +11,10 @@ import {
     UserOutlined,
     ShopOutlined,
     GiftOutlined,
+    SearchOutlined,
+    BellOutlined,
     ThunderboltOutlined,
-    CloudServerOutlined,
+    AppstoreOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation, Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -27,12 +29,12 @@ const MainLayout: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
 
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth < 768);
-            if (window.innerWidth >= 768) {
+            setIsMobile(window.innerWidth < 992);
+            if (window.innerWidth >= 992) {
                 setMobileDrawerOpen(false);
             }
         };
@@ -48,13 +50,13 @@ const MainLayout: React.FC = () => {
     const menuItems = [
         {
             key: '/dashboard',
-            icon: <DashboardOutlined style={{ fontSize: '18px' }} />,
-            label: <Link to="/dashboard" onClick={() => setMobileDrawerOpen(false)}>Dashboard</Link>,
+            icon: <HomeOutlined style={{ fontSize: '18px' }} />,
+            label: <Link to="/dashboard" onClick={() => setMobileDrawerOpen(false)}>Home</Link>,
         },
         {
             key: '/products',
             icon: <ShoppingOutlined style={{ fontSize: '18px' }} />,
-            label: <Link to="/products" onClick={() => setMobileDrawerOpen(false)}>Products & Inventory</Link>,
+            label: <Link to="/products" onClick={() => setMobileDrawerOpen(false)}>Item / Products</Link>,
         },
         {
             key: '/sales/new',
@@ -64,7 +66,7 @@ const MainLayout: React.FC = () => {
         {
             key: '/sales',
             icon: <HistoryOutlined style={{ fontSize: '18px' }} />,
-            label: <Link to="/sales" onClick={() => setMobileDrawerOpen(false)}>Sales History</Link>,
+            label: <Link to="/sales" onClick={() => setMobileDrawerOpen(false)}>Transactions</Link>,
         },
         {
             key: '/customers',
@@ -84,182 +86,196 @@ const MainLayout: React.FC = () => {
     ];
 
     const SidebarContent = (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0f172a' }}>
-            {/* Logo Header */}
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#ffffff' }}>
+            {/* Logo Brand */}
             <div style={{
-                height: 70,
-                padding: '0 20px',
+                height: 80,
+                padding: '0 24px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: collapsed && !isMobile ? 'center' : 'space-between',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+                justifyContent: collapsed && !isMobile ? 'center' : 'flex-start',
+                borderBottom: '1px solid #f1f5f9'
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <div style={{
-                        width: 38,
-                        height: 38,
-                        borderRadius: 10,
-                        background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                        width: 36,
+                        height: 36,
+                        borderRadius: 12,
+                        background: '#7c3aed',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: 'white',
-                        fontWeight: 'bold',
+                        color: '#ffffff',
                         fontSize: '20px',
-                        boxShadow: '0 4px 12px rgba(79, 70, 229, 0.4)'
+                        boxShadow: '0 4px 14px rgba(124, 58, 237, 0.35)'
                     }}>
-                        🐝
+                        <AppstoreOutlined />
                     </div>
                     {(isMobile || !collapsed) && (
-                        <div>
-                            <Title level={4} style={{ color: '#ffffff', margin: 0, fontSize: '1.1rem', fontWeight: 700, letterSpacing: '-0.3px' }}>
-                                POSBuzz
-                            </Title>
-                            <Text style={{ color: '#94a3b8', fontSize: '11px', fontWeight: 500 }}>Pro POS Edition</Text>
-                        </div>
+                        <Title level={3} style={{ color: '#0f172a', margin: 0, fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.5px' }}>
+                            POSBuzz
+                        </Title>
                     )}
                 </div>
             </div>
 
-            {/* Navigation Menu */}
-            <div style={{ flex: 1, padding: '16px 8px', overflowY: 'auto' }}>
+            {/* Menu Items */}
+            <div style={{ flex: 1, padding: '16px 0', overflowY: 'auto' }}>
                 <Menu
-                    theme="dark"
+                    className="incircle-menu"
                     mode="inline"
                     selectedKeys={[location.pathname]}
                     items={menuItems}
-                    style={{ background: 'transparent', borderRight: 0, fontWeight: 500 }}
+                    style={{ borderRight: 0, background: 'transparent' }}
                 />
             </div>
 
+            {/* Bottom Rocket Card matching Image 1 */}
+            {(isMobile || !collapsed) && (
+                <div className="sidebar-upgrade-card">
+                    <div className="rocket-icon-bg">
+                        🚀
+                    </div>
+                    <Text strong style={{ display: 'block', fontSize: '14px', color: '#1e293b', marginBottom: 4 }}>
+                        Get premium features
+                    </Text>
+                    <Text type="secondary" style={{ display: 'block', fontSize: '12px', marginBottom: 14, lineHeight: 1.4 }}>
+                        Get premium for access all features in there.
+                    </Text>
+                    <Button
+                        type="primary"
+                        className="btn-purple-primary"
+                        block
+                        onClick={() => navigate('/sales/new')}
+                    >
+                        New Sale POS
+                    </Button>
+                </div>
+            )}
+
             {/* Logout Footer */}
-            <div style={{ padding: 16, borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            <div style={{ padding: '12px 16px', borderTop: '1px solid #f1f5f9' }}>
                 <Button
                     type="text"
-                    icon={<LogoutOutlined style={{ color: '#f43f5e' }} />}
+                    icon={<LogoutOutlined style={{ color: '#ef4444' }} />}
                     onClick={handleLogout}
                     style={{
-                        color: '#cbd5e1',
+                        color: '#64748b',
                         width: '100%',
                         display: 'flex',
                         alignItems: 'center',
                         gap: 8,
-                        height: 42,
-                        borderRadius: 8
+                        height: 40,
+                        fontWeight: 600
                     }}
                 >
-                    {(isMobile || !collapsed) && <span style={{ fontWeight: 600 }}>Sign Out</span>}
+                    {(isMobile || !collapsed) && 'Logout Account'}
                 </Button>
             </div>
         </div>
     );
 
     return (
-        <Layout style={{ minHeight: '100vh', background: '#f8fafc' }}>
-            {!isMobile && (
-                <Sider
-                    trigger={null}
-                    collapsible
-                    collapsed={collapsed}
-                    breakpoint="lg"
-                    collapsedWidth={80}
-                    width={260}
-                    style={{
-                        background: '#0f172a',
-                        boxShadow: '4px 0 20px rgba(15, 23, 42, 0.05)',
+        <div className="app-workspace-container">
+            <Layout style={{ minHeight: '100vh', background: '#ffffff' }}>
+                {!isMobile && (
+                    <Sider
+                        className="incircle-sidebar"
+                        trigger={null}
+                        collapsible
+                        collapsed={collapsed}
+                        collapsedWidth={80}
+                        width={250}
+                        style={{
+                            background: '#ffffff',
+                            position: 'sticky',
+                            top: 0,
+                            height: '100vh'
+                        }}
+                    >
+                        {SidebarContent}
+                    </Sider>
+                )}
+
+                {/* Mobile Drawer */}
+                {isMobile && (
+                    <Drawer
+                        placement="left"
+                        onClose={() => setMobileDrawerOpen(false)}
+                        open={mobileDrawerOpen}
+                        width={250}
+                        styles={{ body: { padding: 0, background: '#ffffff' }, header: { display: 'none' } }}
+                        closable={false}
+                    >
+                        {SidebarContent}
+                    </Drawer>
+                )}
+
+                <Layout style={{ background: '#ffffff' }}>
+                    {/* Top Navbar Header matching Image 1 */}
+                    <Header style={{
+                        padding: '0 32px',
+                        background: '#ffffff',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        height: 80,
+                        borderBottom: '1px solid #f1f5f9',
                         position: 'sticky',
                         top: 0,
-                        height: '100vh'
-                    }}
-                >
-                    {SidebarContent}
-                </Sider>
-            )}
+                        zIndex: 9
+                    }}>
+                        <Space size="middle">
+                            <Button
+                                type="text"
+                                icon={isMobile ? <MenuUnfoldOutlined /> : (collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />)}
+                                onClick={() => isMobile ? setMobileDrawerOpen(true) : setCollapsed(!collapsed)}
+                                style={{ fontSize: '18px', color: '#64748b' }}
+                            />
+                            {!isMobile && (
+                                <Input
+                                    prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
+                                    placeholder="Search products, orders, customers..."
+                                    style={{ width: 280, borderRadius: 12, background: '#f8fafc', border: '1px solid #f1f5f9' }}
+                                />
+                            )}
+                        </Space>
 
-            {/* Mobile Drawer */}
-            {isMobile && (
-                <Drawer
-                    placement="left"
-                    onClose={() => setMobileDrawerOpen(false)}
-                    open={mobileDrawerOpen}
-                    width={260}
-                    styles={{ body: { padding: 0, background: '#0f172a' }, header: { display: 'none' } }}
-                    closable={false}
-                >
-                    {SidebarContent}
-                </Drawer>
-            )}
+                        <Space size="large" align="center">
+                            <Badge dot color="#7c3aed">
+                                <Button type="text" shape="circle" icon={<BellOutlined style={{ fontSize: '20px', color: '#64748b' }} />} />
+                            </Badge>
 
-            <Layout style={{ background: '#f8fafc' }}>
-                {/* Header Navbar */}
-                <Header style={{
-                    padding: '0 24px',
-                    background: '#ffffff',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    height: 70,
-                    boxShadow: '0 1px 3px 0 rgba(15, 23, 42, 0.05)',
-                    position: 'sticky',
-                    top: 0,
-                    zIndex: 9
-                }}>
-                    <Space size="large">
-                        <Button
-                            type="text"
-                            icon={isMobile ? <MenuUnfoldOutlined /> : (collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />)}
-                            onClick={() => isMobile ? setMobileDrawerOpen(true) : setCollapsed(!collapsed)}
-                            style={{ fontSize: '18px', width: 40, height: 40, color: '#475569' }}
-                        />
-                        <div className="pulse-badge">
-                            <span className="pulse-dot"></span>
-                            <CloudServerOutlined /> Live Cloud Sync
-                        </div>
-                    </Space>
-
-                    <Space size="middle" align="center">
-                        <Button
-                            type="primary"
-                            icon={<ThunderboltOutlined />}
-                            onClick={() => navigate('/sales/new')}
-                            style={{
-                                background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
-                                border: 'none',
-                                boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)',
-                                height: 38,
-                                padding: '0 20px',
-                                fontWeight: 600
-                            }}
-                        >
-                            Quick POS Checkout
-                        </Button>
-
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 12,
-                            padding: '4px 12px 4px 6px',
-                            background: '#f1f5f9',
-                            borderRadius: 999,
-                            border: '1px solid #e2e8f0'
-                        }}>
-                            <Avatar style={{ backgroundColor: '#4f46e5' }} icon={<UserOutlined />} size={30} />
-                            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
-                                <Text strong style={{ fontSize: '13px', color: '#0f172a' }}>{user?.email?.split('@')[0] || 'Admin'}</Text>
-                                <Tag color="indigo" style={{ fontSize: '10px', padding: '0 6px', margin: 0, width: 'fit-content', border: 'none' }}>
-                                    {user?.role || 'ADMIN'}
-                                </Tag>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=Brandon" size={40} style={{ background: '#ede9fe', border: '2px solid #ddd6fe' }} />
+                                {!isMobile && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
+                                        <Text strong style={{ fontSize: '14px', color: '#0f172a' }}>{user?.email?.split('@')[0] || 'Brandon Lubin'}</Text>
+                                        <Text type="secondary" style={{ fontSize: '11px', textTransform: 'capitalize' }}>{user?.role || 'Store Manager'}</Text>
+                                    </div>
+                                )}
                             </div>
-                        </div>
-                    </Space>
-                </Header>
 
-                {/* Main Body Content */}
-                <Content style={{ margin: '24px', minHeight: 280 }}>
-                    <Outlet />
-                </Content>
+                            <Button
+                                type="primary"
+                                className="btn-purple-primary"
+                                icon={<ThunderboltOutlined />}
+                                size="large"
+                                onClick={() => navigate('/sales/new')}
+                                style={{ height: 44, padding: '0 24px' }}
+                            >
+                                Create Order
+                            </Button>
+                        </Space>
+                    </Header>
+
+                    {/* Main Content View */}
+                    <Content style={{ padding: '32px', background: '#ffffff', minHeight: 280 }}>
+                        <Outlet />
+                    </Content>
+                </Layout>
             </Layout>
-        </Layout>
+        </div>
     );
 };
 

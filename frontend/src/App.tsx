@@ -19,12 +19,14 @@ function App() {
         <ConfigProvider
             theme={{
                 token: {
-                    colorPrimary: '#4f46e5',
-                    colorLink: '#4f46e5',
-                    borderRadius: 10,
-                    fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
-                    colorBgLayout: '#f8fafc',
+                    colorPrimary: '#7c3aed',
+                    colorLink: '#7c3aed',
+                    borderRadius: 12,
+                    fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                    colorBgLayout: '#ffffff',
                     colorBgContainer: '#ffffff',
+                    colorText: '#1e293b',
+                    colorTextHeading: '#0f172a',
                 },
                 components: {
                     Card: {
