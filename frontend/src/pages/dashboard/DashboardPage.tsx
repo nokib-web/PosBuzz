@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Col, Card, Typography, Table, Space, Spin, Button, Input, Select, Checkbox, Avatar, Empty, Alert, Tag } from 'antd';
+import { Row, Col, Card, Typography, Table, Space, Spin, Button, Input, Select, Checkbox, Avatar, Empty, Alert, Tag, Popover } from 'antd';
 import {
     RiseOutlined,
     FallOutlined,
@@ -105,12 +105,23 @@ const DashboardPage: React.FC = () => {
     const avgOrderValue = totalOrders > 0 ? (grossRevenue / totalOrders) : 0;
     const totalProfit = Math.round(grossRevenue * 0.25);
 
-    // Filter sales by search term
+    const [statusFilter, setStatusFilter] = useState<string>('ALL');
+
+    // Filter sales by search term, status, and branch scope
     const filteredSales = recentSales.filter((sale: any) => {
-        if (!searchTerm) return true;
-        const name = sale.customer?.name || 'Walk-in';
-        const id = sale.id || '';
-        return name.toLowerCase().includes(searchTerm.toLowerCase()) || id.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = !searchTerm || (
+            (sale.customer?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (sale.id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (sale.items?.[0]?.product?.name || '').toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        const matchesStatus = statusFilter === 'ALL' || (sale.status && sale.status.toUpperCase() === statusFilter.toUpperCase());
+
+        const matchesBranch = selectedBranchScope === 'all' ||
+            (selectedBranchScope === 'b2' ? (sale.outletName === 'Chittagong Hub' || sale.outletName === 'Uttara Branch') :
+            (selectedBranchScope === 'b3' ? sale.outletName === 'Online E-Commerce' : (!sale.outletName || sale.outletName === 'Dhaka Main Store')));
+
+        return matchesSearch && matchesStatus && matchesBranch;
     });
 
     // Real trend chart data
@@ -555,9 +566,39 @@ const DashboardPage: React.FC = () => {
                                 size="small"
                                 style={{ width: 180, borderRadius: 8 }}
                             />
-                            <Button icon={<FilterOutlined />} size="small" style={{ borderRadius: 8, fontWeight: 600 }}>
-                                Filter
-                            </Button>
+                            <Popover
+                                content={
+                                    <div style={{ width: 220, padding: '4px 0' }}>
+                                        <Text strong style={{ fontSize: 12, display: 'block', marginBottom: 6, color: isDark ? '#ffffff' : '#09090b' }}>
+                                            Filter by Status:
+                                        </Text>
+                                        <Select
+                                            value={statusFilter}
+                                            onChange={setStatusFilter}
+                                            style={{ width: '100%', marginBottom: 10 }}
+                                            options={[
+                                                { value: 'ALL', label: 'All Statuses' },
+                                                { value: 'ON_DELIVERY', label: '🚚 On Delivery' },
+                                                { value: 'PENDING', label: '⏳ Pending' },
+                                                { value: 'COMPLETED', label: '✅ Completed' },
+                                                { value: 'REMOVED', label: '❌ Cancelled / Removed' },
+                                            ]}
+                                        />
+                                        {statusFilter !== 'ALL' && (
+                                            <Button size="small" type="link" danger onClick={() => setStatusFilter('ALL')} style={{ padding: 0, fontWeight: 700 }}>
+                                                Clear Filter
+                                            </Button>
+                                        )}
+                                    </div>
+                                }
+                                title="Order Filters"
+                                trigger="click"
+                                placement="bottomRight"
+                            >
+                                <Button icon={<FilterOutlined />} size="small" style={{ borderRadius: 8, fontWeight: 600 }}>
+                                    Filter {statusFilter !== 'ALL' && <Tag color="gold" style={{ marginLeft: 4, fontSize: 10, padding: '0 4px', fontWeight: 800 }}>{statusFilter}</Tag>}
+                                </Button>
+                            </Popover>
                         </Space>
                     </div>
                 }
