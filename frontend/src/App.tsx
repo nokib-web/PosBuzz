@@ -19,8 +19,24 @@ function App() {
         <ConfigProvider
             theme={{
                 token: {
-                    colorPrimary: '#1677ff',
-                    borderRadius: 6,
+                    colorPrimary: '#4f46e5',
+                    colorLink: '#4f46e5',
+                    borderRadius: 10,
+                    fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
+                    colorBgLayout: '#f8fafc',
+                    colorBgContainer: '#ffffff',
+                },
+                components: {
+                    Card: {
+                        borderRadiusLG: 16,
+                    },
+                    Button: {
+                        fontWeight: 600,
+                        borderRadius: 10,
+                    },
+                    Table: {
+                        borderRadius: 12,
+                    },
                 },
             }}
         >
