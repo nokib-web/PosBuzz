@@ -26,6 +26,7 @@ import {
 } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { promotionService } from '../../services/promotion.service';
+import { useTheme } from '../../contexts/ThemeContext';
 import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
@@ -33,6 +34,7 @@ const { RangePicker } = DatePicker;
 
 const PromotionListPage: React.FC = () => {
     const queryClient = useQueryClient();
+    const { isDark } = useTheme();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [form] = Form.useForm();
 
@@ -77,7 +79,7 @@ const PromotionListPage: React.FC = () => {
             key: 'name',
             render: (text: string, record: any) => (
                 <Space direction="vertical" size={0}>
-                    <Text strong>{text}</Text>
+                    <Text strong style={{ color: isDark ? '#ffffff' : '#0f172a' }}>{text}</Text>
                     <Text type="secondary" style={{ fontSize: '12px' }}>{record.description}</Text>
                 </Space>
             )
@@ -87,7 +89,7 @@ const PromotionListPage: React.FC = () => {
             dataIndex: 'type',
             key: 'type',
             render: (type: string) => (
-                <Tag color={type === 'PERCENTAGE' ? 'gold' : 'blue'}>
+                <Tag color={type === 'PERCENTAGE' ? 'gold' : 'blue'} style={{ fontWeight: 700, borderRadius: 6 }}>
                     {type.replace('_', ' ')}
                 </Tag>
             )
@@ -97,7 +99,7 @@ const PromotionListPage: React.FC = () => {
             dataIndex: 'value',
             key: 'value',
             render: (val: any, record: any) => (
-                <Text strong>
+                <Text strong style={{ color: '#85861b', fontSize: '15px' }}>
                     {record.type === 'PERCENTAGE' ? `${val}%` : `$${val}`}
                 </Text>
             )
@@ -106,9 +108,9 @@ const PromotionListPage: React.FC = () => {
             title: 'Validity',
             key: 'validity',
             render: (_: any, record: any) => (
-                <Space direction="vertical" size={0}>
-                    <Text style={{ fontSize: '12px' }}>{dayjs(record.startDate).format('MMM DD')} - {dayjs(record.endDate).format('MMM DD, YYYY')}</Text>
-                </Space>
+                <Text style={{ fontSize: '12px', color: isDark ? '#a1a1aa' : '#64748b' }}>
+                    {dayjs(record.startDate).format('MMM DD')} - {dayjs(record.endDate).format('MMM DD, YYYY')}
+                </Text>
             )
         },
         {
@@ -130,6 +132,7 @@ const PromotionListPage: React.FC = () => {
             render: (_: any, record: any) => (
                 <Button
                     size="small"
+                    style={{ borderRadius: 8, fontWeight: 700 }}
                     onClick={() => updateStatusMutation.mutate({ id: record.id, active: !record.active })}
                 >
                     {record.active ? 'Pause' : 'Activate'}
@@ -139,17 +142,18 @@ const PromotionListPage: React.FC = () => {
     ];
 
     return (
-        <div style={{ padding: '24px' }}>
-            <Row gutter={[16, 16]} justify="space-between" align="middle" style={{ marginBottom: '24px' }}>
+        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            <Row gutter={[16, 16]} justify="space-between" align="middle">
                 <Col>
-                    <Title level={2} style={{ margin: 0 }}>
-                        <TagOutlined /> Marketing & Promotions
+                    <Title level={2} style={{ margin: 0, fontWeight: 800, color: isDark ? '#ffffff' : '#0f172a' }}>
+                        <TagOutlined style={{ color: '#85861b' }} /> Marketing & Promotions
                     </Title>
-                    <Text type="secondary">Create smart discounts to boost your sales</Text>
+                    <Text type="secondary" style={{ fontSize: '13px' }}>Create smart discounts to boost your sales</Text>
                 </Col>
                 <Col>
                     <Button
                         type="primary"
+                        className="btn-purple-primary"
                         icon={<PlusOutlined />}
                         size="large"
                         onClick={() => setIsModalVisible(true)}
@@ -159,20 +163,22 @@ const PromotionListPage: React.FC = () => {
                 </Col>
             </Row>
 
-            <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+            <Row gutter={[16, 16]}>
                 <Col xs={24} sm={8}>
-                    <Card bordered={false} className="glass-card">
+                    <Card bordered={false} className="incircle-card">
                         <Statistic
-                            title="Active Campaigns"
+                            title={<span style={{ color: isDark ? '#a1a1aa' : '#64748b' }}>Active Campaigns</span>}
                             value={promotions?.filter((p: any) => p.active).length || 0}
-                            prefix={<BulbOutlined style={{ color: '#faad14' }} />}
+                            valueStyle={{ color: isDark ? '#d6d750' : '#85861b', fontWeight: 800 }}
+                            prefix={<BulbOutlined style={{ color: '#d6d750' }} />}
                         />
                     </Card>
                 </Col>
             </Row>
 
-            <Card bordered={false} className="glass-card">
+            <Card bordered={false} className="incircle-card">
                 <Table
+                    className="incircle-table"
                     dataSource={promotions}
                     columns={columns}
                     loading={isLoading}
@@ -254,14 +260,14 @@ const PromotionListPage: React.FC = () => {
                     <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
                         <Space>
                             <Button onClick={() => setIsModalVisible(false)}>Cancel</Button>
-                            <Button type="primary" htmlType="submit" loading={createMutation.isPending}>
+                            <Button type="primary" className="btn-purple-primary" htmlType="submit" loading={createMutation.isPending}>
                                 Launch Campaign
                             </Button>
                         </Space>
                     </Form.Item>
                 </Form>
             </Modal>
-        </div>
+        </Space>
     );
 };
 

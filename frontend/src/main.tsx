@@ -10,6 +10,10 @@ const queryClient = new QueryClient({
         queries: {
             retry: 1,
             refetchOnWindowFocus: false,
+            refetchOnMount: false,
+            refetchOnReconnect: false,
+            staleTime: 10 * 60 * 1000, // 10 minutes high-speed instant memory cache
+            gcTime: 30 * 60 * 1000,    // 30 minutes garbage collection
         },
     },
 });

@@ -1,28 +1,33 @@
-import React from 'react';
-import { Form, Input, Button, Typography, Checkbox, Alert, message, Row, Col, theme } from 'antd';
-import { UserOutlined, LockOutlined, ThunderboltFilled } from '@ant-design/icons';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Form, Input, Button, Typography, Checkbox, Alert, message, Select, Tag, Row, Col } from 'antd';
+import { UserOutlined, LockOutlined, EnvironmentOutlined, SafetyCertificateOutlined, AppstoreOutlined } from '@ant-design/icons';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '../../hooks/useAuth';
+import { useBranch } from '../../contexts/BranchContext';
 import { LoginDto } from '../../types/auth.types';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
+const { Option } = Select;
 
 const LoginPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { login } = useAuth();
+    const { branches, setActiveBranchById } = useBranch();
     const [form] = Form.useForm();
-    const { token } = theme.useToken();
+    const [loginBranchId, setLoginBranchId] = useState<string>('b1');
 
-    const from = location.state?.from?.pathname || '/';
+    const from = location.state?.from?.pathname || '/dashboard';
 
     const loginMutation = useMutation({
         mutationFn: async (values: LoginDto) => {
             await login(values);
         },
         onSuccess: () => {
-            message.success('Welcome back!');
+            setActiveBranchById(loginBranchId);
+            const branchObj = branches.find(b => b.id === loginBranchId);
+            message.success(`Welcome to POSBuzz! Active Outlet: ${branchObj?.name || 'Dhaka Main Store'}`);
             navigate(from, { replace: true });
         },
         onError: (error: any) => {
@@ -35,196 +40,268 @@ const LoginPage: React.FC = () => {
         loginMutation.mutate(values);
     };
 
+    const handleDemoLogin = (email: string, pass: string, targetBranchId: string) => {
+        setLoginBranchId(targetBranchId);
+        form.setFieldsValue({ email, password: pass });
+        loginMutation.mutate({ email, password: pass });
+    };
+
     return (
-        <div style={{ minHeight: '100vh', width: '100%', overflowX: 'hidden' }}>
-            <Row style={{ minHeight: '100vh' }}>
-                {/* Left Side - Hero Section */}
-                <Col
-                    xs={0}
-                    md={12}
-                    lg={14}
-                    style={{
-                        backgroundImage: 'url("/login-bg.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        position: 'relative',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        padding: '40px',
-                    }}
-                >
-                    <div style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: 'rgba(0, 21, 41, 0.7)', // Deep blue overlay matching branding
-                        backdropFilter: 'blur(4px)',
-                    }}></div>
+        <div style={{
+            minHeight: '100vh',
+            width: '100vw',
+            position: 'fixed',
+            inset: 0,
+            background: '#09090b',
+            backgroundImage: `linear-gradient(135deg, rgba(9, 9, 11, 0.78) 0%, rgba(18, 18, 24, 0.85) 100%), url('/login-bg.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '24px',
+            zIndex: 9999,
+            overflow: 'hidden',
+            fontFamily: 'Inter, system-ui, -apple-system, sans-serif'
+        }}>
+            {/* Ambient Brand Glowing Mesh Orbs */}
+            <div style={{
+                position: 'absolute',
+                top: '-15%',
+                left: '-10%',
+                width: '600px',
+                height: '600px',
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(214, 215, 80, 0.18) 0%, rgba(0,0,0,0) 70%)',
+                filter: 'blur(70px)',
+                pointerEvents: 'none'
+            }} />
+            <div style={{
+                position: 'absolute',
+                bottom: '-20%',
+                right: '-10%',
+                width: '700px',
+                height: '700px',
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(133, 134, 27, 0.22) 0%, rgba(0,0,0,0) 70%)',
+                filter: 'blur(80px)',
+                pointerEvents: 'none'
+            }} />
 
-                    <div style={{ position: 'relative', zIndex: 1, maxWidth: '600px', textAlign: 'center' }}>
+            {/* Dark Glassmorphic Centered Card (580px width) */}
+            <div className="dark-login-card" style={{
+                width: '100%',
+                maxWidth: '580px',
+                background: 'rgba(20, 20, 24, 0.88)',
+                backdropFilter: 'blur(28px)',
+                WebkitBackdropFilter: 'blur(28px)',
+                borderRadius: '24px',
+                border: '1px solid rgba(214, 215, 80, 0.3)',
+                padding: '32px 36px',
+                boxShadow: '0 30px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(214, 215, 80, 0.12)',
+                zIndex: 2,
+                position: 'relative'
+            }}>
+                {/* Brand Header & Tag */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid rgba(63, 63, 70, 0.6)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                         <div style={{
-                            marginBottom: '24px',
-                            display: 'inline-flex',
-                            padding: '20px',
-                            background: 'rgba(255,255,255,0.1)',
-                            borderRadius: '50%',
-                            backdropFilter: 'blur(10px)',
-                            border: '1px solid rgba(255,255,255,0.2)'
+                            width: 44,
+                            height: 44,
+                            borderRadius: 12,
+                            background: '#d6d750',
+                            color: '#09090b',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: 22,
+                            boxShadow: '0 4px 14px rgba(214, 215, 80, 0.45)'
                         }}>
-                            <ThunderboltFilled style={{ fontSize: '64px', color: '#fff' }} />
+                            <AppstoreOutlined />
                         </div>
-                        <Title level={1} style={{ color: '#fff', fontSize: '48px', marginBottom: '16px', fontWeight: 700 }}>
-                            POSBuzz
-                        </Title>
-                        <Paragraph style={{ color: 'rgba(255,255,255,0.85)', fontSize: '18px', lineHeight: '1.6' }}>
-                            The next-generation Point of Sale system designed to streamline your business operations and boost productivity.
-                        </Paragraph>
+                        <div>
+                            <Title level={3} style={{ color: '#ffffff', margin: 0, fontWeight: 900, fontSize: '22px', letterSpacing: '-0.5px' }}>
+                                POS<span style={{ color: '#d6d750' }}>Buzz</span>
+                            </Title>
+                            <Text style={{ color: '#a1a1aa', fontSize: '12px' }}>
+                                Enterprise Multi-Store POS Terminal
+                            </Text>
+                        </div>
                     </div>
-                </Col>
 
-                {/* Right Side - Login Form */}
-                <Col
-                    xs={24}
-                    md={12}
-                    lg={10}
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        backgroundColor: '#fff',
-                        padding: '40px',
-                    }}
+                    <Tag style={{
+                        background: '#1f1f23',
+                        color: '#d6d750',
+                        border: '1px solid #e2e366',
+                        borderRadius: 10,
+                        padding: '4px 12px',
+                        fontWeight: 800,
+                        fontSize: '11px'
+                    }}>
+                        🇧🇩 BDT (Tk)
+                    </Tag>
+                </div>
+
+                {loginMutation.isError && (
+                    <Alert
+                        message="Authentication Failed"
+                        description={(loginMutation.error as any)?.response?.data?.message || 'Invalid credentials'}
+                        type="error"
+                        showIcon
+                        style={{ marginBottom: 18, borderRadius: 10, background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#fca5a5' }}
+                    />
+                )}
+
+                <Form
+                    form={form}
+                    name="cyber_wave_login_form"
+                    initialValues={{ remember: true }}
+                    onFinish={onFinish}
+                    layout="vertical"
+                    size="large"
                 >
-                    <div style={{ width: '100%', maxWidth: '420px' }}>
-                        <div style={{ marginBottom: '40px' }}>
-                            <Title level={2} style={{ marginBottom: '8px' }}>Welcome Back</Title>
-                            <Text type="secondary" style={{ fontSize: '16px' }}>Please enter your details to sign in.</Text>
-                        </div>
-
-                        {loginMutation.isError && (
-                            <Alert
-                                message="Authentication Failed"
-                                description={(loginMutation.error as any)?.response?.data?.message || 'Internal server error'}
-                                type="error"
-                                showIcon
-                                style={{ marginBottom: 24, borderRadius: '8px' }}
-                            />
-                        )}
-
-                        <Form
-                            form={form}
-                            name="login_form"
-                            initialValues={{ remember: true }}
-                            onFinish={onFinish}
-                            layout="vertical"
-                            size="large"
+                    {/* Target Store Location Selector */}
+                    <Form.Item label={<Text strong style={{ color: '#e4e4e7', fontSize: '12px', letterSpacing: '0.3px' }}>SELECT STORE OUTLET</Text>} style={{ marginBottom: 16 }}>
+                        <Select
+                            value={loginBranchId}
+                            onChange={(val) => setLoginBranchId(val)}
+                            suffixIcon={<EnvironmentOutlined style={{ color: '#d6d750' }} />}
+                            style={{ width: '100%', height: 42 }}
+                            classNames={{ popup: { root: 'dark-select-dropdown' } }}
                         >
+                            {branches.map(b => (
+                                <Option key={b.id} value={b.id}>
+                                    📍 {b.name} ({b.address})
+                                </Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+
+                    {/* 2-Column Email & Password Grid */}
+                    <Row gutter={[14, 0]}>
+                        <Col span={12}>
                             <Form.Item
                                 name="email"
+                                label={<Text strong style={{ color: '#e4e4e7', fontSize: '12px', letterSpacing: '0.3px' }}>USERNAME / EMAIL</Text>}
                                 rules={[
-                                    { required: true, message: 'Please input your email!' },
-                                    { type: 'email', message: 'Invalid email format' }
+                                    { required: true, message: 'Enter username or email' }
                                 ]}
                             >
                                 <Input
-                                    prefix={<UserOutlined style={{ color: token.colorTextQuaternary }} />}
-                                    placeholder="Email Address"
-                                    style={{ borderRadius: '8px', padding: '10px 14px' }}
+                                    prefix={<UserOutlined style={{ color: '#d6d750' }} />}
+                                    placeholder="e.g. nokib_admin"
+                                    style={{ height: 42 }}
                                 />
                             </Form.Item>
-
+                        </Col>
+                        <Col span={12}>
                             <Form.Item
                                 name="password"
-                                rules={[{ required: true, message: 'Please input your password!' }]}
+                                label={<Text strong style={{ color: '#e4e4e7', fontSize: '12px', letterSpacing: '0.3px' }}>PASSWORD</Text>}
+                                rules={[{ required: true, message: 'Enter password' }]}
                             >
                                 <Input.Password
-                                    prefix={<LockOutlined style={{ color: token.colorTextQuaternary }} />}
-                                    placeholder="Password"
-                                    style={{ borderRadius: '8px', padding: '10px 14px' }}
+                                    prefix={<LockOutlined style={{ color: '#d6d750' }} />}
+                                    placeholder="••••••••"
+                                    style={{ height: 42 }}
                                 />
                             </Form.Item>
+                        </Col>
+                    </Row>
 
-                            <Form.Item>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Form.Item name="remember" valuePropName="checked" noStyle>
-                                        <Checkbox>Remember me</Checkbox>
-                                    </Form.Item>
-                                    <Link to="/forgot-password" style={{ color: token.colorPrimary, fontWeight: 500 }}>
-                                        Forgot password?
-                                    </Link>
-                                </div>
-                            </Form.Item>
+                    {/* Remember & Sign In Action Row */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20, marginTop: 4 }}>
+                        <Form.Item name="remember" valuePropName="checked" noStyle>
+                            <Checkbox style={{ color: '#a1a1aa', fontSize: '13px' }}>Remember me</Checkbox>
+                        </Form.Item>
 
-                            <Form.Item>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            loading={loginMutation.isPending}
+                            style={{
+                                height: 44,
+                                padding: '0 28px',
+                                background: '#d6d750',
+                                color: '#09090b',
+                                fontWeight: 800,
+                                fontSize: '14px',
+                                borderRadius: 10,
+                                border: 'none',
+                                boxShadow: '0 4px 14px rgba(214, 215, 80, 0.45)'
+                            }}
+                        >
+                            Sign In to Terminal
+                        </Button>
+                    </div>
+
+                    {/* Horizontal 3-Column Demo Login Grid */}
+                    <div style={{ paddingTop: 16, borderTop: '1px solid rgba(63, 63, 70, 0.6)' }}>
+                        <Text strong style={{ display: 'block', fontSize: '11px', color: '#d6d750', marginBottom: 10, textAlign: 'center', letterSpacing: '0.5px' }}>
+                            ⚡ 1-CLICK DEMO LOGIN ROLES
+                        </Text>
+                        <Row gutter={[10, 10]}>
+                            <Col span={8}>
                                 <Button
-                                    type="primary"
-                                    htmlType="submit"
                                     block
-                                    loading={loginMutation.isPending}
+                                    onClick={() => handleDemoLogin('admin@gmail.com', '!QAZ1qaz', 'b1')}
                                     style={{
-                                        height: '48px',
-                                        fontSize: '16px',
-                                        borderRadius: '8px',
-                                        fontWeight: 600,
-                                        boxShadow: '0 4px 14px 0 rgba(22, 119, 255, 0.3)'
+                                        height: 40,
+                                        borderRadius: 10,
+                                        background: '#fefec8',
+                                        border: '1px solid #e2e366',
+                                        color: '#09090b',
+                                        fontWeight: 800,
+                                        fontSize: '11px'
                                     }}
                                 >
-                                    Sign In
+                                    👑 Admin Demo
                                 </Button>
-                            </Form.Item>
-
-                            <div style={{ marginTop: '32px' }}>
-                                <div style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    marginBottom: '24px',
-                                    color: token.colorTextQuaternary
-                                }}>
-                                    <span style={{ borderBottom: '1px solid #f0f0f0', flex: 1, marginRight: '12px' }}></span>
-                                    TEST ACCOUNTS
-                                    <span style={{ borderBottom: '1px solid #f0f0f0', flex: 1, marginLeft: '12px' }}></span>
-                                </div>
-
-                                <Row gutter={16}>
-                                    <Col span={12}>
-                                        <Button
-                                            block
-                                            onClick={() => form.setFieldsValue({
-                                                email: 'admin@gmail.com',
-                                                password: '!QAZ1qaz'
-                                            })}
-                                            style={{ height: '40px', borderRadius: '8px' }}
-                                        >
-                                            Demo Admin
-                                        </Button>
-                                    </Col>
-                                    <Col span={12}>
-                                        <Button
-                                            block
-                                            onClick={() => form.setFieldsValue({
-                                                email: 'employee@gmail.com', // Updated per user request/code view
-                                                password: '!QAZ1qaz'
-                                            })}
-                                            style={{ height: '40px', borderRadius: '8px' }}
-                                        >
-                                            Demo Employee
-                                        </Button>
-                                    </Col>
-                                </Row>
-                            </div>
-
-                            <div style={{ textAlign: 'center', marginTop: '32px' }}>
-                                <Text type="secondary">Don't have an account? </Text>
-                                <Link to="/register" style={{ fontWeight: 600 }}>Create an account</Link>
-                            </div>
-                        </Form>
+                            </Col>
+                            <Col span={8}>
+                                <Button
+                                    block
+                                    onClick={() => handleDemoLogin('manager@posbuzz.com', '!QAZ1qaz', 'b2')}
+                                    style={{
+                                        height: 40,
+                                        borderRadius: 10,
+                                        background: '#1f1f23',
+                                        border: '1px solid #3f3f46',
+                                        color: '#ffffff',
+                                        fontWeight: 700,
+                                        fontSize: '11px'
+                                    }}
+                                >
+                                    🏢 Manager Demo
+                                </Button>
+                            </Col>
+                            <Col span={8}>
+                                <Button
+                                    block
+                                    onClick={() => handleDemoLogin('employee@gmail.com', '!QAZ1qaz', 'b1')}
+                                    style={{
+                                        height: 40,
+                                        borderRadius: 10,
+                                        background: '#1f1f23',
+                                        border: '1px solid #3f3f46',
+                                        color: '#ffffff',
+                                        fontWeight: 700,
+                                        fontSize: '11px'
+                                    }}
+                                >
+                                    🛒 Cashier Demo
+                                </Button>
+                            </Col>
+                        </Row>
                     </div>
-                </Col>
-            </Row>
+
+                    <div style={{ marginTop: 16, textAlign: 'center', color: '#71717a', fontSize: '11px' }}>
+                        <SafetyCertificateOutlined style={{ color: '#d6d750', marginRight: 4 }} />
+                        Encrypted SSL 256-Bit Terminal Auth
+                    </div>
+                </Form>
+            </div>
         </div>
     );
 };

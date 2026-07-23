@@ -2,53 +2,138 @@
 
 :root {
   --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --bg-workspace: #f1f5f9;
+  --bg-workspace: #f4f4f5;
   --primary-color: #d6d750;
   --primary-hover: #c2c438;
-  --primary-dark: #0f172a;
-  --primary-light: #f9fae6;
-  --primary-border: #ecee91;
+  --primary-text: #09090b;
+  --primary-light: #fefec8;
+  --primary-border: #e2e366;
   --text-dark: #0f172a;
   --text-muted: #64748b;
-  --border-light: #e2e8f0;
+  --border-light: #e4e4e7;
   --card-radius: 16px;
+}
+
+/* Light Theme Variables */
+body.theme-light {
+  --bg-workspace: #f4f4f5;
+  --bg-card: #ffffff;
+  --bg-subtle: #fafafa;
+  --text-main: #0f172a;
+  --text-sub: #475569;
+  --border-color: #e4e4e7;
+  --header-bg-left: linear-gradient(135deg, #fafafa 0%, #f4f4f5 100%);
+  --header-bg-right: linear-gradient(135deg, #fefec8 0%, #f4f593 100%);
+  --total-pay-bg: linear-gradient(135deg, #fafafa 0%, #f4f4f5 100%);
+  --total-pay-text: #0f172a;
+  --total-pay-amount: #85861b;
+}
+
+/* Dark Theme Variables - Ultra Premium Deep Charcoal */
+body.theme-dark {
+  --bg-workspace: #09090b;
+  --bg-card: #141416;
+  --bg-subtle: #1f1f23;
+  --text-main: #ffffff;
+  --text-sub: #a1a1aa;
+  --border-color: #27272a;
+  --header-bg-left: linear-gradient(135deg, #141416 0%, #1f1f23 100%);
+  --header-bg-right: linear-gradient(135deg, #1f1f23 0%, #27272a 100%);
+  --total-pay-bg: linear-gradient(135deg, #141416 0%, #1f1f23 100%);
+  --total-pay-text: #ffffff;
+  --total-pay-amount: #d6d750;
 }
 
 * {
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  padding: 24px;
-  font-family: var(--font-family);
-  background: var(--bg-workspace);
-  min-height: 100vh;
-  color: var(--text-dark);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Chrome & Edge Browser Autofill Fix for Dark Inputs */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #18181b inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
-@media (max-width: 768px) {
-  body {
-    padding: 8px;
-  }
+/* Ant Design Select & Input Dark Theme Overrides for Login Page & Modals */
+.dark-login-card .ant-select-selector,
+.dark-login-card .ant-select-selection-search-input,
+.dark-login-card .ant-input,
+.dark-login-card .ant-input-password,
+.dark-login-card .ant-input-affix-wrapper {
+  background-color: #18181b !important;
+  background: #18181b !important;
+  border-color: #27272a !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+}
+
+.dark-login-card .ant-select-selection-item,
+.dark-login-card .ant-select-arrow {
+  color: #ffffff !important;
+}
+
+.dark-login-card .ant-input-affix-wrapper-focused,
+.dark-login-card .ant-select-focused .ant-select-selector {
+  border-color: #d6d750 !important;
+  box-shadow: 0 0 0 2px rgba(214, 215, 80, 0.2) !important;
+}
+
+/* Dropdown Menu Dark Theme Override */
+.dark-select-dropdown,
+.ant-select-dropdown {
+  background-color: #18181b !important;
+  border: 1px solid #27272a !important;
+}
+
+.ant-select-dropdown .ant-select-item {
+  color: #e4e4e7 !important;
+}
+
+.ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background-color: #27272a !important;
+  color: #d6d750 !important;
+  font-weight: 700;
+}
+
+.ant-select-dropdown .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  background-color: #27272a !important;
+  color: #ffffff !important;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background-color: #09090b !important;
+  min-height: 100vh;
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 #root {
   width: 100%;
-  max-width: 1600px;
+  max-width: 1900px;
   margin: 0 auto;
 }
 
-/* Floating White Workspace Container */
+/* 1900px Max Width Workspace Container */
 .app-workspace-container {
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08), 0 4px 16px rgba(15, 23, 42, 0.03);
+  background: var(--bg-card, #ffffff);
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
-  min-height: calc(100vh - 48px);
-  border: 1px solid #e2e8f0;
+  min-height: 100vh;
+  border: none;
+  max-width: 1900px;
+  margin: 0 auto;
 }
 
 /* Custom Scrollbar */
@@ -58,98 +143,149 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #141416;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #3f3f46;
   border-radius: 999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
 }
 
 /* Sidebar Custom Styling */
 .incircle-sidebar {
-  background: #ffffff !important;
-  border-right: 1px solid #e2e8f0 !important;
+  background: var(--bg-card, #ffffff) !important;
+  border-right: 1px solid var(--border-color, #e4e4e7) !important;
+}
+
+.incircle-menu {
+  padding: 6px 4px !important;
 }
 
 .incircle-menu .ant-menu-item {
   border-radius: 12px !important;
-  margin: 4px 12px !important;
-  height: 44px !important;
-  line-height: 44px !important;
-  color: #475569 !important;
+  margin: 3px 4px !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  color: var(--text-sub, #334155) !important;
   font-weight: 600 !important;
-  font-size: 14px !important;
+  font-size: 13px !important;
 }
 
 .incircle-menu .ant-menu-item:hover {
-  color: #0f172a !important;
-  background: #f8fafc !important;
+  color: #09090b !important;
+  background: #fafafa !important;
 }
 
 .incircle-menu .ant-menu-item-selected {
-  background: #0f172a !important;
-  color: #d6d750 !important;
-  font-weight: 700 !important;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);
+  background: #fefec8 !important;
+  color: #09090b !important;
+  font-weight: 800 !important;
+  border: 1px solid #e2e366 !important;
+  box-shadow: 0 4px 14px rgba(214, 215, 80, 0.25) !important;
 }
 
 .incircle-menu .ant-menu-item-selected .ant-menu-title-content a {
+  color: #09090b !important;
+}
+
+body.theme-dark .incircle-menu .ant-menu-item {
+  color: #a1a1aa !important;
+}
+
+body.theme-dark .incircle-menu .ant-menu-item:hover {
+  color: #ffffff !important;
+  background: #1f1f23 !important;
+}
+
+body.theme-dark .incircle-menu .ant-menu-item-selected {
+  background: #1f1f23 !important;
+  color: #d6d750 !important;
+  border: 1px solid #e2e366 !important;
+  box-shadow: 0 4px 14px rgba(214, 215, 80, 0.2) !important;
+}
+
+body.theme-dark .incircle-menu .ant-menu-item-selected .ant-menu-title-content a {
   color: #d6d750 !important;
 }
 
 /* Rocket Upgrade Card */
 .sidebar-upgrade-card {
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-  border-radius: 16px;
-  padding: 18px 16px;
-  margin: 16px;
+  background: linear-gradient(135deg, #fefec8 0%, #f4f593 100%);
+  border-radius: 14px;
+  padding: 12px;
+  margin: 10px;
   text-align: center;
-  border: 1px solid #334155;
+  border: 1px solid #e2e366;
+  color: #0f172a;
+}
+
+.sidebar-upgrade-card .ant-typography-secondary {
+  color: #475569 !important;
+}
+
+body.theme-dark .sidebar-upgrade-card {
+  background: linear-gradient(135deg, #141416 0%, #1f1f23 100%);
+  border: 1px solid #e2e366;
   color: #ffffff;
 }
 
+body.theme-dark .sidebar-upgrade-card .ant-typography-secondary {
+  color: #a1a1aa !important;
+}
+
 .sidebar-upgrade-card .rocket-icon-bg {
-  width: 48px;
-  height: 48px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
+  width: 36px;
+  height: 36px;
+  background: #09090b;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  font-size: 24px;
+  margin: 0 auto 6px;
+  box-shadow: 0 4px 12px rgba(214, 215, 80, 0.3);
+  font-size: 18px;
+  color: #d6d750;
 }
 
 /* Incircle Cards */
 .incircle-card {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 16px !important;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04) !important;
+  background: var(--bg-card, #ffffff) !important;
+  border: 1px solid var(--border-color, #e4e4e7) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.02) !important;
   transition: all 0.2s ease-in-out;
   overflow: hidden;
 }
 
 .incircle-card:hover {
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04) !important;
 }
 
 .incircle-card-active {
-  border-bottom: 3px solid var(--primary-color) !important;
+  border-bottom: 3px solid #d6d750 !important;
 }
 
-/* Status Pills */
+body.theme-dark .incircle-card {
+  background: #141416 !important;
+  border-color: #27272a !important;
+}
+
+body.theme-dark .ant-card-head {
+  background: #18181b !important;
+  border-bottom: 1px solid #27272a !important;
+  color: #ffffff !important;
+}
+
+body.theme-dark .ant-card-head-title {
+  color: #ffffff !important;
+}
+
+/* High Contrast Status Pills */
 .status-pill {
-  padding: 4px 12px;
+  padding: 3px 10px;
   border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 800;
   letter-spacing: 0.3px;
   display: inline-flex;
   align-items: center;
@@ -158,53 +294,255 @@ body {
 }
 
 .status-pill-delivery {
-  background: #ecfdf5;
-  color: #047857;
-  border: 1px solid #a7f3d0;
+  background: #dcfce7 !important;
+  color: #15803d !important;
+  border: 1px solid #86efac !important;
 }
 
 .status-pill-pending {
-  background: #fefce8;
-  color: #a16207;
-  border: 1px solid #fef08a;
+  background: #fef3c7 !important;
+  color: #b45309 !important;
+  border: 1px solid #fde047 !important;
 }
 
 .status-pill-removed {
-  background: #fef2f2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+  border: 1px solid #fca5a5 !important;
 }
 
-/* Incircle Table */
-.incircle-table .ant-table {
+/* Incircle Table & Dark Mode Text */
+.incircle-table .ant-table,
+.ant-table {
   background: transparent !important;
 }
 
+.ant-table-thead > tr > th,
 .incircle-table .ant-table-thead > tr > th {
   background: #f8fafc !important;
-  color: #64748b !important;
-  font-weight: 700 !important;
+  color: #0f172a !important;
+  font-weight: 800 !important;
   font-size: 11px !important;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   border-bottom: 1px solid #e2e8f0 !important;
+  padding: 10px 14px !important;
 }
 
-.incircle-table .ant-table-tbody > tr > td {
+.incircle-table .ant-table-tbody > tr > td,
+.ant-table-tbody > tr > td {
   border-bottom: 1px solid #f1f5f9 !important;
-  padding: 16px !important;
+  padding: 10px 14px !important;
   font-size: 13px;
+  color: #0f172a;
 }
 
-.incircle-table .ant-table-tbody > tr:hover > td {
+.incircle-table .ant-table-tbody > tr:hover > td,
+.ant-table-tbody > tr:hover > td {
   background-color: #f8fafc !important;
 }
 
-/* Primary High Contrast Electric Lime Button */
+body.theme-dark .ant-table-thead > tr > th,
+body.theme-dark .incircle-table .ant-table-thead > tr > th {
+  background: #18181b !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid #3f3f46 !important;
+}
+
+body.theme-dark .incircle-table .ant-table-tbody > tr > td,
+body.theme-dark .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #27272a !important;
+  color: #ffffff !important;
+}
+
+body.theme-dark .incircle-table .ant-table-tbody > tr:hover > td,
+body.theme-dark .ant-table-tbody > tr:hover > td {
+  background-color: #1f1f23 !important;
+}
+
+/* Ant Design Default & Secondary Buttons in Dark Mode */
+body.theme-dark .ant-btn-default {
+  background-color: #1f1f23 !important;
+  color: #ffffff !important;
+  border-color: #3f3f46 !important;
+  font-weight: 600;
+}
+
+body.theme-dark .ant-btn-default:hover {
+  background-color: #27272a !important;
+  color: #d6d750 !important;
+  border-color: #d6d750 !important;
+}
+
+body.theme-dark .ant-btn-default:disabled {
+  background-color: #141416 !important;
+  color: #52525b !important;
+  border-color: #27272a !important;
+}
+
+/* Ant Design Segmented Control in Dark Mode (Grid vs Table view) */
+body.theme-dark .ant-segmented {
+  background-color: #1f1f23 !important;
+  color: #a1a1aa !important;
+  padding: 2px !important;
+  border: 1px solid #3f3f46 !important;
+}
+
+body.theme-dark .ant-segmented-item {
+  color: #a1a1aa !important;
+  font-weight: 700;
+}
+
+body.theme-dark .ant-segmented-item:hover {
+  color: #ffffff !important;
+}
+
+body.theme-dark .ant-segmented-item-selected {
+  background-color: #d6d750 !important;
+  color: #09090b !important;
+  font-weight: 800;
+}
+
+body.theme-dark .ant-segmented-item-selected .ant-segmented-item-label {
+  color: #09090b !important;
+  font-weight: 800;
+}
+
+/* Ant Design Radio Buttons in Dark Mode (Payment Method Tabs) */
+body.theme-dark .ant-radio-button-wrapper {
+  background-color: #1f1f23 !important;
+  color: #a1a1aa !important;
+  border-color: #3f3f46 !important;
+  font-weight: 700;
+}
+
+body.theme-dark .ant-radio-button-wrapper:hover {
+  color: #ffffff !important;
+}
+
+body.theme-dark .ant-radio-button-wrapper-checked {
+  background-color: #d6d750 !important;
+  color: #09090b !important;
+  font-weight: 800;
+  border-color: #d6d750 !important;
+}
+
+body.theme-dark .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  color: #09090b !important;
+}
+
+/* Ant Design Inputs & Selects in Dark Mode */
+body.theme-dark .ant-input,
+body.theme-dark .ant-input-affix-wrapper {
+  background-color: #1f1f23 !important;
+  color: #ffffff !important;
+  border-color: #3f3f46 !important;
+}
+
+body.theme-dark .ant-input::placeholder {
+  color: #a1a1aa !important;
+}
+
+body.theme-dark .ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+  background-color: #1f1f23 !important;
+  color: #ffffff !important;
+  border-color: #3f3f46 !important;
+}
+
+body.theme-dark .ant-select-selection-item {
+  color: #ffffff !important;
+  font-weight: 700;
+}
+
+/* Ant Design Modal & Form Label Dark Theme Overrides */
+body.theme-dark .ant-modal-content,
+body.theme-dark .ant-modal-header {
+  background-color: #141416 !important;
+  color: #ffffff !important;
+  border-color: #27272a !important;
+}
+
+body.theme-dark .ant-modal-title {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+body.theme-dark .ant-form-item-label > label {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+body.theme-dark .ant-picker {
+  background-color: #1f1f23 !important;
+  border-color: #3f3f46 !important;
+  color: #ffffff !important;
+}
+
+body.theme-dark .ant-picker-input > input {
+  color: #ffffff !important;
+}
+
+body.theme-dark .ant-picker-separator {
+  color: #a1a1aa !important;
+}
+
+body.theme-dark .ant-input-number {
+  background-color: #1f1f23 !important;
+  border-color: #3f3f46 !important;
+  color: #ffffff !important;
+}
+
+body.theme-dark .ant-input-number-input {
+  color: #ffffff !important;
+}
+
+body.theme-dark .ant-drawer-content {
+  background-color: #141416 !important;
+  color: #ffffff !important;
+}
+
+body.theme-dark .ant-drawer-header {
+  background-color: #18181b !important;
+  border-bottom: 1px solid #27272a !important;
+}
+
+body.theme-dark .ant-drawer-title {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+body.theme-dark .ant-empty-description {
+  color: #a1a1aa !important;
+}
+
+/* Fix Dark Mode Select Dropdown Popup Menu Contrast */
+body.theme-dark .ant-select-dropdown {
+  background-color: #141416 !important;
+  border: 1px solid #3f3f46 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.theme-dark .ant-select-item-option {
+  color: #e4e4e7 !important;
+  font-weight: 600;
+}
+
+body.theme-dark .ant-select-item-option-active {
+  background-color: #1f1f23 !important;
+  color: #ffffff !important;
+}
+
+body.theme-dark .ant-select-item-option-selected {
+  background-color: #27272a !important;
+  color: #d6d750 !important;
+  font-weight: 800;
+}
+
+/* 100% Consistent #d6d750 Primary Button */
 .btn-purple-primary, .ant-btn-primary {
   background: #d6d750 !important;
   border-color: #d6d750 !important;
-  color: #0f172a !important;
+  color: #09090b !important;
   font-weight: 800 !important;
   border-radius: 12px !important;
   box-shadow: 0 4px 14px rgba(214, 215, 80, 0.4) !important;
@@ -216,12 +554,12 @@ body {
   color: #000000 !important;
 }
 
-/* Eye-Catching Total Pay Container */
+/* Soft Total Pay Summary Container */
 .total-pay-box {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: var(--total-pay-bg, linear-gradient(135deg, #fafafa 0%, #f4f4f5 100%));
   border-radius: 16px;
-  padding: 20px;
-  color: #ffffff;
-  border: 1px solid #334155;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.2);
+  padding: 16px;
+  color: var(--total-pay-text, #0f172a);
+  border: 1px solid var(--border-color, #e4e4e7);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
 }

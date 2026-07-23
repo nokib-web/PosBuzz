@@ -3,7 +3,12 @@ export interface Product {
     name: string;
     sku: string;
     price: number;
+    costPrice?: number;
     stock_quantity: number;
+    unit?: string;
+    category?: string;
+    lowStockThreshold?: number;
+    supplierId?: string;
     createdAt: string;
     updatedAt: string;
 }
@@ -12,7 +17,12 @@ export interface CreateProductDto {
     name: string;
     sku: string;
     price: number;
+    costPrice?: number;
     stock_quantity: number;
+    unit?: string;
+    category?: string;
+    lowStockThreshold?: number;
+    supplierId?: string;
 }
 
 export interface UpdateProductDto extends Partial<CreateProductDto> { }
