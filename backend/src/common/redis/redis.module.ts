@@ -11,15 +11,16 @@ const redisProvider: Provider = {
         const redisUrl = configService.get<string>('redis.url') || 'redis://localhost:6379';
 
         const client = new Redis(redisUrl, {
-            maxRetriesPerRequest: 3,
+            maxRetriesPerRequest: 1,
+            enableOfflineQueue: false,
             retryStrategy: (times) => {
-                const delay = Math.min(times * 50, 2000);
-                return delay;
+                if (times > 3) return null;
+                return Math.min(times * 100, 2000);
             },
         });
 
         client.on('error', (err) => {
-            logger.error('Redis Client Error', err);
+            logger.warn(`Redis notice: ${err.message}`);
         });
 
         client.on('connect', () => {

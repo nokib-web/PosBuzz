@@ -95,9 +95,13 @@ export class ProductService {
         const cacheKey = `product:${id}`;
 
         // Try cache
-        const cachedProduct = await this.redis.get(cacheKey);
-        if (cachedProduct) {
-            return JSON.parse(cachedProduct);
+        try {
+            const cachedProduct = await this.redis.get(cacheKey);
+            if (cachedProduct) {
+                return JSON.parse(cachedProduct);
+            }
+        } catch (cacheError) {
+            console.warn('Cache fetch failed:', cacheError.message);
         }
 
         const product = await this.prisma.product.findUnique({
@@ -109,7 +113,11 @@ export class ProductService {
         }
 
         // Save cache
-        await this.redis.set(cacheKey, JSON.stringify(product), 'EX', this.CACHE_TTL);
+        try {
+            await this.redis.set(cacheKey, JSON.stringify(product), 'EX', this.CACHE_TTL);
+        } catch (cacheError) {
+            console.warn('Cache save failed:', cacheError.message);
+        }
 
         return product;
     }
@@ -184,14 +192,22 @@ export class ProductService {
 
     // --- Cache Invalidation Helpers ---
     async clearListCache() {
-        // Clear all keys matching products:*
-        const keys = await this.redis.keys('products:*');
-        if (keys.length > 0) {
-            await this.redis.del(...keys);
+        try {
+            // Clear all keys matching products:*
+            const keys = await this.redis.keys('products:*');
+            if (keys.length > 0) {
+                await this.redis.del(...keys);
+            }
+        } catch (cacheError) {
+            console.warn('Cache clear failed:', cacheError.message);
         }
     }
 
     async clearProductCache(id: string) {
-        await this.redis.del(`product:${id}`);
+        try {
+            await this.redis.del(`product:${id}`);
+        } catch (cacheError) {
+            console.warn('Cache product clear failed:', cacheError.message);
+        }
     }
 }

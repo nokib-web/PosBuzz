@@ -49,7 +49,11 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onCancel, pro
 
     const handleOk = () => {
         form.validateFields().then((values) => {
-            mutation.mutate(values);
+            const payload = {
+                ...values,
+                supplierId: values.supplierId || undefined,
+            };
+            mutation.mutate(payload);
         });
     };
 
