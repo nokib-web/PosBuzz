@@ -14,7 +14,6 @@ import {
 } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { saleService } from '../../services/sale.service';
-import { analyticsService } from '../../services/analytics.service';
 import { productService } from '../../services/product.service';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -62,12 +61,7 @@ const DashboardPage: React.FC = () => {
 
 
 
-    // Fetch Trend Data from database
-    const { data: trend, isLoading: isLoadingTrend } = useQuery({
-        queryKey: ['analytics-trend', activeBranch.id, selectedBranchScope, user?.role],
-        queryFn: () => analyticsService.getTrend(7),
-        ...roleQueryConfig,
-    });
+
 
     // Fetch Recent Sales from database
     const { data: salesData, isLoading: isLoadingSales } = useQuery({
@@ -124,11 +118,21 @@ const DashboardPage: React.FC = () => {
         return matchesSearch && matchesStatus && matchesBranch;
     });
 
-    // Real trend chart data
-    const branchTrend = (trend || []).map((t: any) => ({
-        ...t,
-        amount: Number(t.amount || 0)
-    }));
+    // Generate last 7 days trend dynamic dataset from scoped sales
+    const branchTrend = Array.from({ length: 7 }).map((_, i) => {
+        const d = dayjs().subtract(6 - i, 'day');
+        const dateStr = d.format('YYYY-MM-DD');
+        const daySum = scopedSales.reduce((acc: number, s: any) => {
+            if (dayjs(s.createdAt).format('YYYY-MM-DD') === dateStr) {
+                return acc + Number(s.total_amount || 0);
+            }
+            return acc;
+        }, 0);
+        return {
+            date: dateStr,
+            amount: daySum
+        };
+    });
 
     // Custom Tooltip for Order Analytics Chart matching #d6d750
     const CustomAnalyticsTooltip = ({ active, payload, label }: any) => {
@@ -162,7 +166,7 @@ const DashboardPage: React.FC = () => {
     const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
     const performanceData = daysOfWeek.map((dayName, dayIdx) => {
-        const daySalesSum = recentSales.reduce((acc: number, sale: any) => {
+        const daySalesSum = scopedSales.reduce((acc: number, sale: any) => {
             const saleDay = dayjs(sale.createdAt).day();
             const normalizedDayIdx = saleDay === 0 ? 6 : saleDay - 1;
             if (normalizedDayIdx === dayIdx) {
@@ -176,7 +180,7 @@ const DashboardPage: React.FC = () => {
 
         return {
             day: dayName,
-            value: isMainBranch ? daySalesSum : 0,
+            value: daySalesSum,
             active: isToday
         };
     });
@@ -287,7 +291,7 @@ const DashboardPage: React.FC = () => {
         },
     ];
 
-    if (isLoadingSales || isLoadingTrend) {
+    if (isLoadingSales) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', flexDirection: 'column', gap: 16 }}>
                 <Spin size="large" />
@@ -305,7 +309,11 @@ const DashboardPage: React.FC = () => {
                         Order Analytics Dashboard
                     </Title>
                     <Text type="secondary" style={{ fontSize: '12px' }}>
-                        Reporting for: <strong style={{ color: isDark ? '#d6d750' : '#85861b' }}>{selectedBranchScope === 'all' ? '🌐 All Outlets Combined (Total enterprise)' : `📍 ${activeBranch.name}`}</strong>
+                        Reporting for: <strong style={{ color: isDark ? '#d6d750' : '#85861b' }}>
+                            {selectedBranchScope === 'all' ? '🌐 All Outlets Combined (Total Enterprise)' :
+                             selectedBranchScope === 'b2' ? '📍 Chittagong Outlet' :
+                             selectedBranchScope === 'b3' ? '📍 Online E-Commerce' : `📍 ${activeBranch.name}`}
+                        </strong>
                     </Text>
                 </div>
 
