@@ -72,12 +72,18 @@ const generate1000SuperstoreProducts = (): Product[] => {
 
 const INITIAL_MOCK_PRODUCTS: Product[] = generate1000SuperstoreProducts();
 
+// Sentinel key: if this exists in localStorage, the user has manually cleared all products
+const CLEARED_FLAG_KEY = 'posbuzz_products_cleared';
+
 const getStoredProducts = (): Product[] => {
     try {
+        // If user manually cleared, respect that and return empty
+        if (localStorage.getItem(CLEARED_FLAG_KEY) === 'true') return [];
+
         const saved = localStorage.getItem('posbuzz_products_store');
         if (saved) {
             const parsed = JSON.parse(saved);
-            if (Array.isArray(parsed) && parsed.length >= 1000) return parsed;
+            if (Array.isArray(parsed)) return parsed;
         }
     } catch {}
     return [...INITIAL_MOCK_PRODUCTS];
@@ -85,6 +91,8 @@ const getStoredProducts = (): Product[] => {
 
 const saveProductsToStorage = (products: Product[]) => {
     try {
+        // If saving products, remove the cleared flag
+        if (products.length > 0) localStorage.removeItem(CLEARED_FLAG_KEY);
         localStorage.setItem('posbuzz_products_store', JSON.stringify(products));
     } catch {}
 };
@@ -206,6 +214,7 @@ export const productService = {
     clearAllProducts: (): void => {
         liveProductsStore = [];
         try {
+            localStorage.setItem(CLEARED_FLAG_KEY, 'true');
             localStorage.removeItem('posbuzz_products_store');
         } catch {}
     }
