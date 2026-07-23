@@ -60,12 +60,7 @@ const DashboardPage: React.FC = () => {
         gcTime: 15 * 60 * 1000,
     };
 
-    // Fetch Stats Summary from database (Optimized Role-Wise)
-    const { data: summary, isLoading: isLoadingSummary } = useQuery({
-        queryKey: ['analytics-summary', activeBranch.id, selectedBranchScope, user?.role],
-        queryFn: () => analyticsService.getSummary(),
-        ...roleQueryConfig,
-    });
+
 
     // Fetch Trend Data from database
     const { data: trend, isLoading: isLoadingTrend } = useQuery({
@@ -97,19 +92,18 @@ const DashboardPage: React.FC = () => {
     // Process real metric figures from live backend/local database
     const recentSales = salesData?.data || [];
 
-    const grossRevenue = summary?.totalRevenue !== undefined && summary?.totalRevenue > 0
-        ? summary.totalRevenue
-        : recentSales.reduce((acc: number, s: any) => acc + Number(s.total_amount || 0), 0);
+    // Filter sales by selected outlet / branch scope
+    const scopedSales = recentSales.filter((sale: any) => {
+        if (selectedBranchScope === 'all') return true;
+        if (selectedBranchScope === 'b2') return sale.outletName === 'Chittagong Hub' || sale.outletName === 'Uttara Branch';
+        if (selectedBranchScope === 'b3') return sale.outletName === 'Online E-Commerce';
+        return !sale.outletName || sale.outletName === 'Dhaka Main Store';
+    });
 
-    const totalOrders = summary?.totalSalesCount !== undefined && summary?.totalSalesCount > 0
-        ? summary.totalSalesCount
-        : (salesData?.total || recentSales.length);
-
+    const grossRevenue = scopedSales.reduce((acc: number, s: any) => acc + Number(s.total_amount || 0), 0);
+    const totalOrders = scopedSales.length;
     const avgOrderValue = totalOrders > 0 ? (grossRevenue / totalOrders) : 0;
-
-    const totalProfit = summary?.totalProfit !== undefined && summary?.totalProfit > 0
-        ? summary.totalProfit
-        : Math.round(grossRevenue * 0.25);
+    const totalProfit = Math.round(grossRevenue * 0.25);
 
     // Filter sales by search term
     const filteredSales = recentSales.filter((sale: any) => {
@@ -282,7 +276,7 @@ const DashboardPage: React.FC = () => {
         },
     ];
 
-    if (isLoadingSummary || isLoadingTrend) {
+    if (isLoadingSales || isLoadingTrend) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', flexDirection: 'column', gap: 16 }}>
                 <Spin size="large" />
