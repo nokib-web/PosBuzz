@@ -174,23 +174,18 @@ Mango Juice 250ml,SKU-JUICE-250,35,28,400,Ml,Beverages`;
         }
 
         setIsImporting(true);
-        let successCount = 0;
-
-        for (const item of parsedProducts) {
-            try {
-                await productService.createProduct(item);
-                successCount++;
-            } catch (err) {
-                console.error(`Failed to import ${item.name}`, err);
-            }
+        try {
+            const count = await productService.bulkImportProducts(parsedProducts);
+            message.success(`Bulk Import Complete! Successfully added ${count} product(s) into inventory stock.`);
+        } catch (err) {
+            console.error('Bulk import error', err);
+            message.error('Failed to complete bulk import');
+        } finally {
+            setIsImporting(false);
+            setIsBulkModalVisible(false);
+            setParsedProducts([]);
+            queryClient.invalidateQueries({ queryKey: ['products'] });
         }
-
-        setIsImporting(false);
-        setIsBulkModalVisible(false);
-        setParsedProducts([]);
-        queryClient.invalidateQueries({ queryKey: ['products'] });
-
-        message.success(`Bulk Import Complete! Successfully added ${successCount} product(s) into inventory.`);
     };
 
     const columns = [

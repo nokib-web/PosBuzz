@@ -81,4 +81,29 @@ export const productService = {
             if (idx >= 0) MOCK_PRODUCTS.splice(idx, 1);
         }
     },
+
+    bulkImportProducts: async (dtos: CreateProductDto[]): Promise<number> => {
+        try {
+            const response = await api.post('/products/bulk', { items: dtos });
+            if (response.data && response.data.count) return response.data.count;
+            return dtos.length;
+        } catch {
+            dtos.forEach((dto, index) => {
+                const newP: Product = {
+                    id: `bulk-${Date.now()}-${index}`,
+                    name: dto.name,
+                    sku: dto.sku || `SKU-${index + 100}`,
+                    price: Number(dto.price || 100),
+                    costPrice: Number(dto.costPrice || 80),
+                    stock_quantity: Number(dto.stock_quantity || 10),
+                    unit: dto.unit || 'Pcs',
+                    category: dto.category || 'General',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                };
+                MOCK_PRODUCTS.push(newP);
+            });
+            return dtos.length;
+        }
+    }
 };
