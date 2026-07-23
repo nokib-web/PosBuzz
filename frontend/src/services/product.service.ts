@@ -201,5 +201,12 @@ export const productService = {
         liveProductsStore.unshift(...newItems);
         saveProductsToStorage(liveProductsStore);
         return dtos.length;
+    },
+
+    clearAllProducts: (): void => {
+        liveProductsStore = [];
+        try {
+            localStorage.removeItem('posbuzz_products_store');
+        } catch {}
     }
 };

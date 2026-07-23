@@ -10,7 +10,8 @@ import {
     FileExcelOutlined,
     UploadOutlined,
     DownloadOutlined,
-    CheckCircleOutlined
+    CheckCircleOutlined,
+    ClearOutlined
 } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productService } from '../../services/product.service';
@@ -166,6 +167,13 @@ Mango Juice 250ml,SKU-JUICE-250,35,28,400,Ml,Beverages`;
         return false;
     };
 
+    // Clear All Products
+    const handleClearAll = () => {
+        productService.clearAllProducts();
+        queryClient.invalidateQueries({ queryKey: ['products'] });
+        message.success('All products deleted from inventory!');
+    };
+
     // Batch Submit Bulk Import
     const handleBulkImportSubmit = async () => {
         if (parsedProducts.length === 0) {
@@ -298,6 +306,23 @@ Mango Juice 250ml,SKU-JUICE-250,35,28,400,Ml,Beverages`;
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
                 <Title level={3} style={{ margin: 0, fontWeight: 800 }}>Inventory Products Catalog</Title>
                 <Space wrap>
+                    <Popconfirm
+                        title="Delete All Products"
+                        description={`This will permanently delete ALL ${data?.total ?? 0} products from your inventory. Are you sure?`}
+                        onConfirm={handleClearAll}
+                        okText="Yes, Delete All"
+                        cancelText="Cancel"
+                        okButtonProps={{ danger: true }}
+                    >
+                        <Button
+                            danger
+                            icon={<ClearOutlined />}
+                            size="large"
+                            style={{ borderRadius: 12, fontWeight: 700 }}
+                        >
+                            Delete All Products
+                        </Button>
+                    </Popconfirm>
                     <Button
                         icon={<FileExcelOutlined />}
                         onClick={() => setIsBulkModalVisible(true)}
