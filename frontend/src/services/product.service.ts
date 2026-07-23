@@ -1,7 +1,7 @@
 import api from '../utils/axios';
 import { Product, CreateProductDto, UpdateProductDto, PaginatedResponse } from '../types/product.types';
 
-// ─── Local fallback store (used only when backend is unreachable) ───────────
+// ─── Local fallback store ────────────────────────────────────────────────────
 const STORAGE_KEY = 'posbuzz_products_store';
 const CLEARED_FLAG_KEY = 'posbuzz_products_cleared';
 
@@ -24,24 +24,8 @@ const saveLocalProducts = (products: Product[]) => {
     } catch {}
 };
 
-// In-memory cache (refreshed from API on each getProducts call)
+// In-memory cache
 let localCache: Product[] = getLocalProducts();
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
-/** Check if the backend API is reachable */
-let _backendAvailable: boolean | null = null;
-
-const isBackendAvailable = async (): Promise<boolean> => {
-    if (_backendAvailable !== null) return _backendAvailable;
-    try {
-        await api.get('/health', { timeout: 5000 });
-        _backendAvailable = true;
-    } catch {
-        _backendAvailable = false;
-    }
-    return _backendAvailable;
-};
 
 // ─── Public Service ──────────────────────────────────────────────────────────
 
@@ -49,31 +33,25 @@ export const productService = {
 
     /**
      * Fetch paginated products.
-     * → Tries backend API first.
-     * → Falls back to localCache only if API is unavailable.
+     * Tries backend API first, falls back to localCache if unavailable.
      */
     getProducts: async (page = 1, limit = 10, search?: string): Promise<PaginatedResponse<Product>> => {
         try {
-            const params: any = { page, limit };
+            const params: Record<string, unknown> = { page, limit };
             if (search) params.search = search;
 
             const response = await api.get<PaginatedResponse<Product>>('/products', { params, timeout: 8000 });
             const data = response.data;
 
             if (data && Array.isArray(data.data)) {
-                // Refresh local cache with fresh API data
-                if (page === 1 && !search) {
-                    // On first page load without search, sync local cache
+                    if (page === 1 && !search) {
                     localCache = data.data;
                     saveLocalProducts(localCache);
                 }
-                _backendAvailable = true;
                 return data;
             }
             throw new Error('Invalid API response');
         } catch {
-            _backendAvailable = false;
-            // Fallback to local cache
             return productService._getPaginatedLocal(page, limit, search);
         }
     },
@@ -110,24 +88,19 @@ export const productService = {
 
     /**
      * Create a single product.
-     * → Saves to backend database first.
-     * → Falls back to localStorage if offline.
+     * Saves to backend DB first, falls back to localStorage if offline.
      */
     createProduct: async (dto: CreateProductDto): Promise<Product> => {
         try {
             const response = await api.post<Product>('/products', dto, { timeout: 10000 });
             const created = response.data;
-            _backendAvailable = true;
-            // Also update local cache
             localCache.unshift(created);
             saveLocalProducts(localCache);
             return created;
-        } catch (err: any) {
-            // Conflict (duplicate SKU) — re-throw so UI can show proper error
-            if (err?.response?.status === 409) throw err;
+        } catch (err: unknown) {
+            const axiosErr = err as { response?: { status?: number } };
+            if (axiosErr?.response?.status === 409) throw err;
 
-            _backendAvailable = false;
-            // Offline fallback: save to localStorage
             const newP: Product = {
                 id: `local-${Date.now()}`,
                 name: dto.name,
@@ -149,29 +122,23 @@ export const productService = {
     updateProduct: async (id: string, dto: UpdateProductDto): Promise<Product> => {
         try {
             const response = await api.put<Product>(`/products/${id}`, dto, { timeout: 10000 });
-            _backendAvailable = true;
-            // Update local cache
             const idx = localCache.findIndex(p => p.id === id);
             if (idx >= 0) Object.assign(localCache[idx], dto);
             saveLocalProducts(localCache);
             return response.data;
         } catch {
-            _backendAvailable = false;
             const target = localCache.find(p => p.id === id);
             if (target) Object.assign(target, dto);
             saveLocalProducts(localCache);
-            return target || (dto as any);
+            return target || (dto as unknown as Product);
         }
     },
 
     deleteProduct: async (id: string): Promise<void> => {
         try {
             await api.delete(`/products/${id}`, { timeout: 8000 });
-            _backendAvailable = true;
         } catch {
-            _backendAvailable = false;
         }
-        // Always remove from local cache
         const idx = localCache.findIndex(p => p.id === id);
         if (idx >= 0) localCache.splice(idx, 1);
         saveLocalProducts(localCache);
@@ -179,36 +146,30 @@ export const productService = {
 
     /**
      * Bulk import products from CSV.
-     * → Sends ALL products in a SINGLE request to POST /products/bulk
-     * → Backend uses prisma.createMany() — one SQL query for thousands of rows
-     * → Returns count of successfully imported products.
+     * Sends ALL products in a SINGLE request → POST /products/bulk
+     * Backend uses prisma.createMany() — one SQL query.
      */
     bulkImportProducts: async (dtos: CreateProductDto[]): Promise<number> => {
         if (dtos.length === 0) return 0;
 
         try {
-            // Single request — all products at once
             const response = await api.post<{ inserted: number; skipped: number; total: number }>(
                 '/products/bulk',
                 { items: dtos },
-                { timeout: 120000 } // 2 minutes for large imports
+                { timeout: 120000 }
             );
 
-            _backendAvailable = true;
             const inserted = response.data?.inserted ?? 0;
 
-            // Update local cache with what was imported
             if (inserted > 0) {
-                // Refresh cache from API on next getProducts call
                 localCache = [];
                 localStorage.removeItem(STORAGE_KEY);
             }
 
             return inserted;
-        } catch (err: any) {
-            _backendAvailable = false;
+        } catch {
 
-            // Offline fallback — store to localStorage
+            // Offline fallback
             const newItems: Product[] = dtos.map((dto, index) => ({
                 id: `local-bulk-${Date.now()}-${index}`,
                 name: dto.name,
@@ -235,8 +196,4 @@ export const productService = {
         } catch {}
     },
 
-    /** Force reset the backend availability cache (call after reconnecting) */
-    resetAvailabilityCache: () => {
-        _backendAvailable = null;
-    },
 };
