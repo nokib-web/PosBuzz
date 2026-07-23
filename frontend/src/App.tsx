@@ -19,22 +19,23 @@ function App() {
         <ConfigProvider
             theme={{
                 token: {
-                    colorPrimary: '#7c3aed',
-                    colorLink: '#7c3aed',
+                    colorPrimary: '#d6d750',
+                    colorLink: '#85861b',
                     borderRadius: 12,
                     fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                     colorBgLayout: '#ffffff',
                     colorBgContainer: '#ffffff',
-                    colorText: '#1e293b',
-                    colorTextHeading: '#0f172a',
+                    colorText: '#09090b',
+                    colorTextHeading: '#09090b',
                 },
                 components: {
                     Card: {
                         borderRadiusLG: 16,
                     },
                     Button: {
-                        fontWeight: 600,
+                        fontWeight: 700,
                         borderRadius: 10,
+                        colorPrimaryText: '#09090b',
                     },
                     Table: {
                         borderRadius: 12,

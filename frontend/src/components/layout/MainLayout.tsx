@@ -94,25 +94,26 @@ const MainLayout: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: collapsed && !isMobile ? 'center' : 'flex-start',
-                borderBottom: '1px solid #f1f5f9'
+                borderBottom: '1px solid #e4e4e7'
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <div style={{
-                        width: 36,
-                        height: 36,
+                        width: 38,
+                        height: 38,
                         borderRadius: 12,
-                        background: '#7c3aed',
+                        background: '#d6d750',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#ffffff',
+                        color: '#09090b',
                         fontSize: '20px',
-                        boxShadow: '0 4px 14px rgba(124, 58, 237, 0.35)'
+                        fontWeight: 'bold',
+                        boxShadow: '0 4px 14px rgba(214, 215, 80, 0.4)'
                     }}>
                         <AppstoreOutlined />
                     </div>
                     {(isMobile || !collapsed) && (
-                        <Title level={3} style={{ color: '#0f172a', margin: 0, fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.5px' }}>
+                        <Title level={3} style={{ color: '#09090b', margin: 0, fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.5px' }}>
                             POSBuzz
                         </Title>
                     )}
@@ -130,16 +131,16 @@ const MainLayout: React.FC = () => {
                 />
             </div>
 
-            {/* Bottom Rocket Card matching Image 1 */}
+            {/* Bottom Upgrade Card */}
             {(isMobile || !collapsed) && (
                 <div className="sidebar-upgrade-card">
                     <div className="rocket-icon-bg">
-                        🚀
+                        ⚡
                     </div>
-                    <Text strong style={{ display: 'block', fontSize: '14px', color: '#1e293b', marginBottom: 4 }}>
+                    <Text strong style={{ display: 'block', fontSize: '14px', color: '#09090b', marginBottom: 4 }}>
                         Get premium features
                     </Text>
-                    <Text type="secondary" style={{ display: 'block', fontSize: '12px', marginBottom: 14, lineHeight: 1.4 }}>
+                    <Text type="secondary" style={{ display: 'block', fontSize: '12px', marginBottom: 14, lineHeight: 1.4, color: '#71717a' }}>
                         Get premium for access all features in there.
                     </Text>
                     <Button
@@ -154,13 +155,13 @@ const MainLayout: React.FC = () => {
             )}
 
             {/* Logout Footer */}
-            <div style={{ padding: '12px 16px', borderTop: '1px solid #f1f5f9' }}>
+            <div style={{ padding: '12px 16px', borderTop: '1px solid #e4e4e7' }}>
                 <Button
                     type="text"
                     icon={<LogoutOutlined style={{ color: '#ef4444' }} />}
                     onClick={handleLogout}
                     style={{
-                        color: '#64748b',
+                        color: '#71717a',
                         width: '100%',
                         display: 'flex',
                         alignItems: 'center',
@@ -212,7 +213,7 @@ const MainLayout: React.FC = () => {
                 )}
 
                 <Layout style={{ background: '#ffffff' }}>
-                    {/* Top Navbar Header matching Image 1 */}
+                    {/* Top Navbar Header */}
                     <Header style={{
                         padding: '0 32px',
                         background: '#ffffff',
@@ -220,7 +221,7 @@ const MainLayout: React.FC = () => {
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         height: 80,
-                        borderBottom: '1px solid #f1f5f9',
+                        borderBottom: '1px solid #e4e4e7',
                         position: 'sticky',
                         top: 0,
                         zIndex: 9
@@ -230,28 +231,28 @@ const MainLayout: React.FC = () => {
                                 type="text"
                                 icon={isMobile ? <MenuUnfoldOutlined /> : (collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />)}
                                 onClick={() => isMobile ? setMobileDrawerOpen(true) : setCollapsed(!collapsed)}
-                                style={{ fontSize: '18px', color: '#64748b' }}
+                                style={{ fontSize: '18px', color: '#71717a' }}
                             />
                             {!isMobile && (
                                 <Input
-                                    prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
+                                    prefix={<SearchOutlined style={{ color: '#a1a1aa' }} />}
                                     placeholder="Search products, orders, customers..."
-                                    style={{ width: 280, borderRadius: 12, background: '#f8fafc', border: '1px solid #f1f5f9' }}
+                                    style={{ width: 280, borderRadius: 12, background: '#f4f4f5', border: '1px solid #e4e4e7' }}
                                 />
                             )}
                         </Space>
 
                         <Space size="large" align="center">
-                            <Badge dot color="#7c3aed">
-                                <Button type="text" shape="circle" icon={<BellOutlined style={{ fontSize: '20px', color: '#64748b' }} />} />
+                            <Badge dot color="#d6d750">
+                                <Button type="text" shape="circle" icon={<BellOutlined style={{ fontSize: '20px', color: '#71717a' }} />} />
                             </Badge>
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=Brandon" size={40} style={{ background: '#ede9fe', border: '2px solid #ddd6fe' }} />
+                                <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=Brandon" size={40} style={{ background: '#f9fae6', border: '2px solid #ecee91' }} />
                                 {!isMobile && (
                                     <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
-                                        <Text strong style={{ fontSize: '14px', color: '#0f172a' }}>{user?.email?.split('@')[0] || 'Brandon Lubin'}</Text>
-                                        <Text type="secondary" style={{ fontSize: '11px', textTransform: 'capitalize' }}>{user?.role || 'Store Manager'}</Text>
+                                        <Text strong style={{ fontSize: '14px', color: '#09090b' }}>{user?.email?.split('@')[0] || 'Brandon Lubin'}</Text>
+                                        <Text type="secondary" style={{ fontSize: '11px', textTransform: 'capitalize', color: '#71717a' }}>{user?.role || 'Store Manager'}</Text>
                                     </div>
                                 )}
                             </div>

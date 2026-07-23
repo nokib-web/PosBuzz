@@ -2,14 +2,15 @@
 
 :root {
   --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --bg-workspace: linear-gradient(135deg, #a3b8d8 0%, #b8cce4 100%);
-  --purple-primary: #7c3aed;
-  --purple-hover: #6d28d9;
-  --purple-light: #ede9fe;
-  --purple-subtle: #f5f3ff;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --border-light: #f1f5f9;
+  --bg-workspace: #f4f4f5;
+  --primary-color: #d6d750;
+  --primary-hover: #c2c438;
+  --primary-dark: #09090b;
+  --primary-light: #f9fae6;
+  --primary-border: #ecee91;
+  --text-dark: #09090b;
+  --text-muted: #71717a;
+  --border-light: #e4e4e7;
   --card-radius: 16px;
 }
 
@@ -21,9 +22,9 @@ body {
   margin: 0;
   padding: 24px;
   font-family: var(--font-family);
-  background: var(--bg-workspace);
+  background-color: var(--bg-workspace);
   min-height: 100vh;
-  color: var(--text-main);
+  color: var(--text-dark);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -44,9 +45,10 @@ body {
 .app-workspace-container {
   background: #ffffff;
   border-radius: 24px;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12), 0 4px 16px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 20px 50px rgba(9, 9, 11, 0.08), 0 4px 16px rgba(9, 9, 11, 0.03);
   overflow: hidden;
   min-height: calc(100vh - 48px);
+  border: 1px solid #e4e4e7;
 }
 
 /* Custom Scrollbar */
@@ -56,22 +58,22 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f8fafc;
+  background: #f4f4f5;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #a1a1aa;
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #71717a;
 }
 
 /* Sidebar Custom Styling */
 .incircle-sidebar {
   background: #ffffff !important;
-  border-right: 1px solid #f1f5f9 !important;
+  border-right: 1px solid #e4e4e7 !important;
 }
 
 .incircle-menu .ant-menu-item {
@@ -79,24 +81,25 @@ body {
   margin: 4px 12px !important;
   height: 44px !important;
   line-height: 44px !important;
-  color: #64748b !important;
+  color: #52525b !important;
   font-weight: 500 !important;
   font-size: 14px !important;
 }
 
 .incircle-menu .ant-menu-item:hover {
-  color: var(--purple-primary) !important;
-  background: #f8fafc !important;
+  color: #09090b !important;
+  background: #f4f4f5 !important;
 }
 
 .incircle-menu .ant-menu-item-selected {
-  background: var(--purple-light) !important;
-  color: var(--purple-primary) !important;
+  background: var(--primary-light) !important;
+  color: #09090b !important;
   font-weight: 700 !important;
+  border: 1px solid var(--primary-border);
 }
 
 .incircle-menu .ant-menu-item-selected .ant-menu-title-content a {
-  color: var(--purple-primary) !important;
+  color: #09090b !important;
 }
 
 /* Incircle Sidebar Active Submenu Pill */
@@ -104,49 +107,50 @@ body {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: var(--purple-primary);
+  background-color: var(--primary-color);
   display: inline-block;
   margin-right: 8px;
 }
 
 /* Rocket Upgrade Card */
 .sidebar-upgrade-card {
-  background: linear-gradient(180deg, #f5f3ff 0%, #ede9fe 100%);
+  background: linear-gradient(180deg, #fbfce9 0%, #f4f5c5 100%);
   border-radius: 16px;
   padding: 18px 16px;
   margin: 16px;
   text-align: center;
-  border: 1px solid #ddd6fe;
+  border: 1px solid #e2e482;
 }
 
 .sidebar-upgrade-card .rocket-icon-bg {
   width: 48px;
   height: 48px;
-  background: #ffffff;
+  background: #09090b;
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 12px;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+  box-shadow: 0 4px 12px rgba(9, 9, 11, 0.15);
   font-size: 24px;
+  color: var(--primary-color);
 }
 
 /* Incircle Cards */
 .incircle-card {
   background: #ffffff !important;
-  border: 1px solid #f1f5f9 !important;
+  border: 1px solid #e4e4e7 !important;
   border-radius: 16px !important;
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.02) !important;
+  box-shadow: 0 2px 10px rgba(9, 9, 11, 0.02) !important;
   transition: all 0.2s ease-in-out;
 }
 
 .incircle-card:hover {
-  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.08) !important;
+  box-shadow: 0 8px 24px rgba(9, 9, 11, 0.06) !important;
 }
 
 .incircle-card-active {
-  border-bottom: 3px solid var(--purple-primary) !important;
+  border-bottom: 3px solid var(--primary-color) !important;
 }
 
 /* Status Pills */
@@ -163,18 +167,21 @@ body {
 }
 
 .status-pill-delivery {
-  background: #dcfce7;
-  color: #15803d;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
 }
 
 .status-pill-pending {
-  background: #fef3c7;
-  color: #b45309;
+  background: #fefce8;
+  color: #a16207;
+  border: 1px solid #fef08a;
 }
 
 .status-pill-removed {
-  background: #fee2e2;
+  background: #fef2f2;
   color: #b91c1c;
+  border: 1px solid #fecaca;
 }
 
 /* Incircle Table */
@@ -184,35 +191,36 @@ body {
 
 .incircle-table .ant-table-thead > tr > th {
   background: #ffffff !important;
-  color: #94a3b8 !important;
+  color: #71717a !important;
   font-weight: 700 !important;
   font-size: 11px !important;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  border-bottom: 1px solid #f1f5f9 !important;
+  border-bottom: 1px solid #e4e4e7 !important;
 }
 
 .incircle-table .ant-table-tbody > tr > td {
-  border-bottom: 1px solid #f8fafc !important;
+  border-bottom: 1px solid #f4f4f5 !important;
   padding: 16px !important;
   font-size: 13px;
 }
 
 .incircle-table .ant-table-tbody > tr:hover > td {
-  background-color: #f8fafc !important;
+  background-color: #fafafa !important;
 }
 
-/* Primary Purple Button */
-.btn-purple-primary {
-  background: var(--purple-primary) !important;
-  border-color: var(--purple-primary) !important;
-  color: #ffffff !important;
-  font-weight: 600 !important;
+/* Primary #d6d750 Button with Dark Text for Maximum Readability */
+.btn-purple-primary, .ant-btn-primary {
+  background: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  color: #09090b !important;
+  font-weight: 700 !important;
   border-radius: 10px !important;
-  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3) !important;
+  box-shadow: 0 4px 14px rgba(214, 215, 80, 0.4) !important;
 }
 
-.btn-purple-primary:hover {
-  background: var(--purple-hover) !important;
-  border-color: var(--purple-hover) !important;
+.btn-purple-primary:hover, .ant-btn-primary:hover {
+  background: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+  color: #09090b !important;
 }
