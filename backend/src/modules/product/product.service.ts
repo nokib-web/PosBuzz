@@ -25,7 +25,17 @@ export class ProductService {
         }
 
         const product = await this.prisma.product.create({
-            data: dto,
+            data: {
+                name: dto.name,
+                sku: dto.sku,
+                price: dto.price,
+                costPrice: dto.costPrice ?? 0,
+                stock_quantity: dto.stock_quantity ?? 0,
+                lowStockThreshold: dto.lowStockThreshold ?? 5,
+                unit: dto.unit || 'Pcs',
+                category: dto.category || 'General',
+                supplierId: dto.supplierId || null,
+            },
         });
 
         await this.clearListCache();
