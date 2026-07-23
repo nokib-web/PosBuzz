@@ -6,7 +6,7 @@
   "scripts": {
     "frontend": "npm run dev --workspace=frontend",
     "backend": "npm run dev --workspace=backend",
-    "dev": "npm run dev --workspaces --if-present",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
     "build": "npm run build --workspaces --if-present",
     "start": "npm run start --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
