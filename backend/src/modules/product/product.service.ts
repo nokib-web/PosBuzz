@@ -42,6 +42,37 @@ export class ProductService {
         return product;
     }
 
+    async bulkCreate(dtos: CreateProductDto[]) {
+        if (!dtos || dtos.length === 0) {
+            return { inserted: 0, skipped: 0, total: 0 };
+        }
+
+        const data = dtos.map(dto => ({
+            name: dto.name,
+            sku: dto.sku,
+            price: Number(dto.price) || 0,
+            costPrice: Number(dto.costPrice) || 0,
+            stock_quantity: Number(dto.stock_quantity) || 0,
+            lowStockThreshold: Number(dto.lowStockThreshold) || 5,
+            unit: dto.unit || 'Pcs',
+            category: dto.category || 'General',
+        }));
+
+        const result = await this.prisma.product.createMany({
+            data,
+            skipDuplicates: true, // skip if SKU already exists
+        });
+
+        await this.clearListCache();
+
+        return {
+            inserted: result.count,
+            skipped: dtos.length - result.count,
+            total: dtos.length,
+        };
+    }
+
+
     async findAll(query: QueryProductDto) {
         try {
             const { page = 1, limit = 10, search } = query;

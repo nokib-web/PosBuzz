@@ -11,6 +11,8 @@ import {
     HttpCode,
     HttpStatus,
 } from '@nestjs/common';
+import { Type } from 'class-transformer';
+import { IsArray, ValidateNested } from 'class-validator';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -30,6 +32,13 @@ export class ProductController {
     @HttpCode(HttpStatus.CREATED)
     create(@Body() createProductDto: CreateProductDto) {
         return this.productService.create(createProductDto);
+    }
+
+    @Post('bulk')
+    @Roles(Role.ADMIN)
+    @HttpCode(HttpStatus.CREATED)
+    bulkCreate(@Body() body: { items: CreateProductDto[] }) {
+        return this.productService.bulkCreate(body.items || []);
     }
 
     @Get()

@@ -179,35 +179,36 @@ export const productService = {
 
     /**
      * Bulk import products from CSV.
-     * → Sends to backend one by one (batched).
-     * → Falls back to localStorage if offline.
-     * Returns count of successfully imported products.
+     * → Sends ALL products in a SINGLE request to POST /products/bulk
+     * → Backend uses prisma.createMany() — one SQL query for thousands of rows
+     * → Returns count of successfully imported products.
      */
     bulkImportProducts: async (dtos: CreateProductDto[]): Promise<number> => {
-        const useBackend = await isBackendAvailable();
+        if (dtos.length === 0) return 0;
 
-        if (useBackend) {
-            let successCount = 0;
-            // Process in batches of 10 to avoid overwhelming the server
-            const BATCH_SIZE = 10;
-            for (let i = 0; i < dtos.length; i += BATCH_SIZE) {
-                const batch = dtos.slice(i, i + BATCH_SIZE);
-                await Promise.allSettled(
-                    batch.map(async (dto) => {
-                        try {
-                            const response = await api.post<Product>('/products', dto, { timeout: 15000 });
-                            localCache.unshift(response.data);
-                            successCount++;
-                        } catch {
-                            // SKU duplicate or other error — skip
-                        }
-                    })
-                );
+        try {
+            // Single request — all products at once
+            const response = await api.post<{ inserted: number; skipped: number; total: number }>(
+                '/products/bulk',
+                { items: dtos },
+                { timeout: 120000 } // 2 minutes for large imports
+            );
+
+            _backendAvailable = true;
+            const inserted = response.data?.inserted ?? 0;
+
+            // Update local cache with what was imported
+            if (inserted > 0) {
+                // Refresh cache from API on next getProducts call
+                localCache = [];
+                localStorage.removeItem(STORAGE_KEY);
             }
-            saveLocalProducts(localCache);
-            return successCount;
-        } else {
-            // Offline fallback
+
+            return inserted;
+        } catch (err: any) {
+            _backendAvailable = false;
+
+            // Offline fallback — store to localStorage
             const newItems: Product[] = dtos.map((dto, index) => ({
                 id: `local-bulk-${Date.now()}-${index}`,
                 name: dto.name,
