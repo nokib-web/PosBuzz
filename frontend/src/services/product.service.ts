@@ -36,8 +36,13 @@ export const productService = {
         try {
             const params = { page, limit, search };
             const response = await api.get<PaginatedResponse<Product>>('/products', { params });
-            if (response.data && response.data.data && response.data.data.length > 0) {
-                return response.data;
+            if (response.data && response.data.data && Array.isArray(response.data.data)) {
+                response.data.data.forEach(remoteP => {
+                    if (!liveProductsStore.some(p => p.id === remoteP.id || (p.sku && p.sku === remoteP.sku))) {
+                        liveProductsStore.push(remoteP);
+                    }
+                });
+                saveProductsToStorage(liveProductsStore);
             }
             return productService.getPaginatedLocalProducts(page, limit, search);
         } catch {
@@ -137,10 +142,6 @@ export const productService = {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         }));
-
-        try {
-            await api.post('/products/bulk', { items: dtos });
-        } catch {}
 
         liveProductsStore.unshift(...newItems);
         saveProductsToStorage(liveProductsStore);
