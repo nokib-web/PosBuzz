@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || '/api/v1',
-    timeout: 3000, // Fast 3-second network timeout
+    timeout: 15000, // 15s to handle Vercel cold starts
     headers: {
         'Content-Type': 'application/json',
     },

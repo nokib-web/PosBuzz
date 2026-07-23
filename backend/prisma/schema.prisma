@@ -39,6 +39,8 @@ model Product {
   costPrice          Decimal         @default(0) @db.Decimal(10, 2)
   stock_quantity     Int             @default(0)
   lowStockThreshold  Int             @default(5)
+  unit               String          @default("Pcs")
+  category           String          @default("General")
   supplierId         String?
   supplier           Supplier?       @relation(fields: [supplierId], references: [id])
   createdAt          DateTime        @default(now())
