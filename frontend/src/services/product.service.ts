@@ -2,6 +2,17 @@ import api from '../utils/axios';
 import { Product, CreateProductDto, UpdateProductDto, PaginatedResponse } from '../types/product.types';
 
 const generate1000SuperstoreProducts = (): Product[] => {
+    const signature8: Product[] = [
+        { id: 'p-sig-1', name: 'Aarong Dairy Liquid Milk 1L', sku: 'MILK-AAR-1L', price: 95.00, costPrice: 80.00, stock_quantity: 45, unit: 'Pcs', category: 'Dairy', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: 'p-sig-2', name: 'Pran Pure Mustard Oil 500ml', sku: 'OIL-PRAN-500', price: 165.00, costPrice: 140.00, stock_quantity: 30, unit: 'Pcs', category: 'Groceries', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: 'p-sig-3', name: 'Miniket Premium Parboiled Rice (Per Kg)', sku: 'RICE-MIN-1KG', price: 76.00, costPrice: 68.00, stock_quantity: 300, unit: 'Kg', category: 'Groceries', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: 'p-sig-4', name: 'Super Star LED Bulb 12W Daylight', sku: 'BULB-SS-12W', price: 220.00, costPrice: 170.00, stock_quantity: 25, unit: 'Pcs', category: 'Electronics', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: 'p-sig-5', name: 'Ruchi Spicy BBQ Chanachur 150g', sku: 'CHAN-RUC-150', price: 45.00, costPrice: 35.00, stock_quantity: 100, unit: 'Pcs', category: 'Groceries', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: 'p-sig-6', name: 'Teer Refined Sugar 1kg', sku: 'SUG-TEER-1KG', price: 130.00, costPrice: 115.00, stock_quantity: 50, unit: 'Kg', category: 'Groceries', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: 'p-sig-7', name: 'Fresh Refined Soyabean Oil 2L', sku: 'OIL-FRESH-2L', price: 350.00, costPrice: 310.00, stock_quantity: 40, unit: 'Pcs', category: 'Groceries', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: 'p-sig-8', name: 'Ispahani Mirzapore Tea 400g', sku: 'TEA-ISP-400G', price: 240.00, costPrice: 200.00, stock_quantity: 35, unit: 'Pcs', category: 'Beverages', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    ];
+
     const baseItems = [
         { name: 'Miniket Rice Premium', category: 'Groceries', price: 76, unit: 'Kg', skuPrefix: 'RICE-MIN' },
         { name: 'Nazirshail Rice Standard', category: 'Groceries', price: 92, unit: 'Kg', skuPrefix: 'RICE-NAZ' },
@@ -28,7 +39,7 @@ const generate1000SuperstoreProducts = (): Product[] => {
         'Standard 1Kg', 'Select 500ml', 'Ultra Clean 1L', 'Value Pack', 'Premium 2Kg', 'Supreme 5L', 'Eco Pack 250g'
     ];
 
-    const products: Product[] = [];
+    const products: Product[] = [...signature8];
 
     let count = 1;
     for (let i = 0; i < 65; i++) {
